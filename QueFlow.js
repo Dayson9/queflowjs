@@ -7,39 +7,50 @@ return el;
 },
 
 tempLen: (temp) => {
-let len = 0, reg, reg1, x;
-reg = /\{\{[a-zA-Z]{1,}[0-9]{0,}[\.]{1}[a-zA-Z]{1,}[0-9]{0,}\}\}/g;
-reg1 = /\{\{.{1,}\}\}/g;
-
-x = temp.match(reg);
-
-if(x === null){
-len = (temp.match(reg1) === null)? 0: temp.match(reg1).length;
-}else{
-len = x.length;
+if(!temp){
+temp = "";
 }
+
+let len = 0, reg, reg1, x, x1;
+
+reg = /\{\{/g;
+reg1 = /\}\}/g;
+
+x = (temp.match(reg) == null ? 0 : temp.match(reg));
+x1 = (temp.match(reg1) == null ? 0 : temp.match(reg1));
+
+
+if(x.length > x1.length){
+len = x.length;
+}else{
+len = x1.length;
+}
+
 
 return len;
 },
 
 notEvent : (str) => {
 let reg = /^[on]{1}.{1,}$/;
-return (reg.test(str) === true)? false: true;
+return (reg.test(str) === true) ? false: true;
 },
 
-needsUpdate: (temp, key, value, len) => {
-let i, ext, objName, e, decision = false;
+needsUpdate: (temp, key, len) => {
+let objName, decision = false;
 
-for(i = 0; i < len; i++){
-ext = QueFlow.strBetween(temp, "{{", "}}");
-objName = ext.slice(0, ext.indexOf("."));
-e = (new Function("return "+objName+"."+key))();
-if(e === value){
+
+if(!temp){
+temp = ""
+}
+
+if(temp.includes(key)){
 decision = true;
 temp = QueFlow.convert(len, temp);
-break;
+}else{
+decision = false;
+temp = QueFlow.convert(len, temp);
 }
-}
+
 return [decision, temp];
 },
 
@@ -50,14 +61,13 @@ item = {value: item};
 }
 let handler = {
 set(target, key, value) {
-
 target[key] = value;
 let v, len, el;
 for(pieces of QueFlow.dataQF){
 	
 len = QueFlow.tempLen(pieces.template);
 el = QueFlow.select(pieces.qfid);	
-v = QueFlow.needsUpdate(pieces.template, key, value, len);
+v = QueFlow.needsUpdate(pieces.template, key, len);
 
 if(v[0]){
 if(QueFlow.notEvent(pieces.key)){
@@ -66,7 +76,6 @@ el[pieces.key+"Name"] = v[1];
 }else{
 el[pieces.key] = v[1];
 }
-
 }
 }
 }
@@ -74,6 +83,16 @@ el[pieces.key] = v[1];
 }
 proxxy = new Proxy(item, handler);
 return proxxy;
+},
+
+parentType: (element) =>{
+let children = element.querySelectorAll("*");
+
+if(children.length > 0){
+return [true, children];
+}else{
+return [false];
+}
 },
 
 dom: (tagName, attribs = [], ...children) =>{
@@ -142,92 +161,60 @@ component.push({template: arr.value, key: arr.attribute, qfid: id});
 
 cpy = QueFlow.dataQF;
 QueFlow.dataQF= [...cpy, ...component];
-
 return [parsed, component];
 },
 
 jsxToHTML: (jsx) => {
-let out = [], jsx2, attrs = [], qf = document.createElement("div"), el;
-qf.innerHTML = jsx;
-el = qf.querySelector("*");
+let div = document.createElement("div"), children, out;
 
-el.dataset.qfid = "qf"+QueFlow.counterQF;
+div.innerHTML = jsx;
+
+children = div.querySelectorAll("*");
+
+for(c of children){
+let attr = QueFlow.attr(c);
+c.dataset.qfid = "qf"+QueFlow.counterQF;
 QueFlow.counterQF++;
-attrs = QueFlow.attr(el);
 
-attrs.push({
-  attribute: "innerText", 
-  value: el.innerText
+let ch = QueFlow.parentType(c);
+
+if(ch[0]){
+out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid)[0];
+}else{
+attr.push({
+attribute: "innerText",
+value: c.innerText
 });
+out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid)[0];
+}
+}
 
-
-jsx2 = QueFlow.parseQF(attrs, jsx, el.dataset.qfid);
-
-qf.innerHTML = jsx2[0];
-el = qf.querySelector("*");
-attrs = QueFlow.attr(el);
-el.dataset.qfid = "qf"+(QueFlow.counterQF-1);
-attrs.push({attribute: "data-qfid", value: el.dataset.qfid});
-
-out = {html: jsx2, tag: el.tagName, options: attrs, inner: el.innerText, arr: jsx2[1]};
-
-qf.remove();
-
+div.remove();
 
 return out;
 },
 
-Rend: (jsxarr, app) => {
-let htm, element;
+Ln: (arg) => {
+if(arg){
 QueFlow = {...QueFlow};
-
-for(r of jsxarr){
-htm = QueFlow.jsxToHTML(r);
-element = QueFlow.dom(htm.tag, htm.options, htm.inner);
-app.appendChild(element);
-}
-
+}else{
 Object.freeze(QueFlow);
+}
 },
 
 Render: (jsx, app) => {
-  let div = document.createElement("div"), arr = [], children, refined;
-  
-if(typeof jsx == "function"){
-refined = jsx();
-}else{
-refined = jsx;
-}
-
-div.innerHTML = refined;
-children = div.querySelectorAll("*");
-div.innerHTML = "";
-
-children.forEach((child) => {
-div.appendChild(child);
-arr.push(div.innerHTML);
-div.innerHTML = "";
-});
-
-QueFlow.Rend(arr, app);
+QueFlow.Ln(true);
+app.innerHTML = QueFlow.jsxToHTML(jsx);
+QueFlow.Ln(false);
 }, 
 
 iRender: (app) => {
-let div = document.createElement("div"), children = app.querySelectorAll("*"), jsx, htm, el, arr = [];
-
-app.innerHTML = "";
-
-if(children.length > 0){
-children.forEach((child) => {
-div.appendChild(child);
-jsx = div.innerHTML;
-arr.push(jsx);
-div.innerHTML = "";
-});
+if(QueFlow.parentType(app)[0]){
+QueFlow.Ln(true);
+app.innerHTML = QueFlow.jsxToHTML(app.innerHTML);
+QueFlow.Ln(false);
 }
-
-QueFlow.Rend(arr, app);
 }
 };
 
-Object.freeze(QueFlow)
+Object.freeze(QueFlow);

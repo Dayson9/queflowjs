@@ -1,2 +1,2 @@
 # QueFlowJS
-A mini version of React
+A minified version of React.😁

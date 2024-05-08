@@ -86,7 +86,7 @@ return proxxy;
 },
 
 parentType: (element) =>{
-let children = element.querySelectorAll("*");
+let children = element.querySelectorAll("*")??0;
 
 if(children.length > 0){
 return [true, children];
@@ -208,7 +208,8 @@ app.innerHTML = QueFlow.jsxToHTML(jsx);
 QueFlow.Ln(false);
 }, 
 
-iRender: (app) => {
+iRender: (appl) => {
+let app = document.getElementById(appl);
 if(QueFlow.parentType(app)[0]){
 QueFlow.Ln(true);
 app.innerHTML = QueFlow.jsxToHTML(app.innerHTML);

@@ -1,2 +1,2 @@
 # QueFlowJS
-A minified version of React.😁
+A mini library for building reactive state UI. 🌊

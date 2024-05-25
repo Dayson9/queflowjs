@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mirror Typing : QueFlowJS</title>
+</head>
+
+<body>
+  <div id="app">
+    <input type="text" oninput="data.text = this.value" placeholder="Enter text:">
+    <p style="color: darkorchid; font-weight: 600;">You typed: {{data.text}}</p>
+  </div>
+
+  <script src="/lib/queflow.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

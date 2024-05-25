@@ -60,6 +60,8 @@ let item = [];
 
 if(typeof it != "object"){
 item = {value: it};
+}else{
+item = JSON.parse(JSON.stringify(it));
 }
 
 let handler = {
@@ -138,6 +140,7 @@ let extracted, parsed;
 for(i=0; i<len; i++){
 if(reff.includes("{{") && reff.includes("}}")){
 extracted = QueFlow.strBetween(reff, "{{", "}}");
+
 parsed = (new Function("return "+extracted))();
 reff = reff.replace("{{"+extracted+"}}", parsed);
 }
@@ -178,13 +181,16 @@ div.innerHTML = jsx;
 children = div.querySelectorAll("*");
 
 for(c of children){
-inner = c.innerText;
-
 let attr = QueFlow.attr(c);
+attr.push({attribute: "innerText", value: c.innerText});
 
-if(inner.includes("{{") && inner.includes("}}")){
+for(attribute of attr){
+let val = attribute.value;
+if(val.includes("{{") && val.includes("}}")){
 c.dataset.qfid = "qf"+QueFlow.counterQF;
 QueFlow.counterQF++;
+break;
+}
 }
 
 let ch = QueFlow.parentType(c);

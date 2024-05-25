@@ -55,10 +55,13 @@ return [decision, temp];
 },
 
 
-Signal: (item) => {
-if(typeof item != "object"){
-item = {value: item};
+Signal: (it) => {
+let item = [];
+
+if(typeof it != "object"){
+item = {value: it};
 }
+
 let handler = {
 set(target, key, value) {
 target[key] = value;
@@ -66,7 +69,9 @@ let v, len, el;
 for(pieces of QueFlow.dataQF){
 	
 len = QueFlow.tempLen(pieces.template);
-el = QueFlow.select(pieces.qfid);	
+
+if(pieces.qfid != ""){
+el = QueFlow.select(pieces.qfid);
 v = QueFlow.needsUpdate(pieces.template, key, len);
 
 if(v[0]){
@@ -75,6 +80,7 @@ if(pieces.key === "class"){
 el[pieces.key+"Name"] = v[1];
 }else{
 el[pieces.key] = v[1];
+}
 }
 }
 }
@@ -165,16 +171,21 @@ return [parsed, component];
 },
 
 jsxToHTML: (jsx) => {
-let div = document.createElement("div"), children, out;
+let div = document.createElement("div"), children, out, inner = "";
 
 div.innerHTML = jsx;
 
 children = div.querySelectorAll("*");
 
 for(c of children){
+inner = c.innerText;
+
 let attr = QueFlow.attr(c);
+
+if(inner.includes("{{") && inner.includes("}}")){
 c.dataset.qfid = "qf"+QueFlow.counterQF;
 QueFlow.counterQF++;
+}
 
 let ch = QueFlow.parentType(c);
 
@@ -202,14 +213,15 @@ Object.freeze(QueFlow);
 }
 },
 
-Render: (jsx, app) => {
+Render: (jsx, pp) => {
+let app = document.querySelector(pp);
 QueFlow.Ln(true);
 app.innerHTML = QueFlow.jsxToHTML(jsx);
 QueFlow.Ln(false);
 }, 
 
 iRender: (appl) => {
-let app = document.getElementById(appl);
+let app = document.querySelector(appl);
 if(QueFlow.parentType(app)[0]){
 QueFlow.Ln(true);
 app.innerHTML = QueFlow.jsxToHTML(app.innerHTML);

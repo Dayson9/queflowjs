@@ -77,6 +77,8 @@ var QueFlow = {
         }else{
         el[pieces.key] = v[1];
                         }
+                    } else {
+                    el.addEventListener(pieces.key.slice(2), v[1]);
                     }
                 }
             }

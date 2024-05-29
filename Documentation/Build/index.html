@@ -10,10 +10,10 @@
 </head>
 
 <body>
-<nav class="navbar is-transparent">
+<nav class="navbar is-transparent" id="nav">
   <div class="navbar-brand">
 <img id="logo" src="../images/queflow.png" alt="QueFlowJS Logo">
-    <div class="navbar-burger js-burger" data-target="navbarExampleTransparentExample">
+    <div class="navbar-burger js-burger" data-target="navbarExampleTransparentExample" style="color: #158A81;">
       <span></span>
       <span></span>
       <span></span>
@@ -22,14 +22,141 @@
   </div>
 
   <div id="navbarExampleTransparentExample" class="navbar-menu">
-    <div class="navbar-start">
-      <div class="navbar-item"> Overview </div>
-        <div class="navbar-item"> API Reference </div>
-        <div class="navbar-item">Examples</div>
+    <div class="navbar-start" id="navstart">
+      <div class="navbar-item" onclick="toPage('home', true)">Getting started</div>
+        <div class="navbar-item" onclick="toPage('apis', true)"> API Reference </div>
+        <div class="navbar-item" onclick="toPage('demos', true)">Demos</div>
     </div>
   </div>
 </nav>
+<div class="page" id="home">
+     <div class="section">
+       <h1 class="title" style="color: #158A81">QueFlow</h1>
+      <p class="subtitle">A JavaScript library for building reactive state UI 🌊</p>
+      </div>
+      
+<div class="section">
+<h1 class="heading">Getting Started</h1>
+<p>Let's quickly see how we can get started with QueFlow</p>
+<a href="#install">#Installation</a>
+<a href="#qs">#Quick Start</a>
+</div>
+<div class="section" id="install">
+<h1 class="heading">Installation</h1>
+<p>To install QueFlow, you either can use CDN, go to its <a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub repository</a> or <a href="https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@v1.0.0/QueFlow.min.js" target="_blank">direct download</a>.</p><br>
+<h1 class="subtitle">Using CDN</h1>
+<p>CDN is the fastest way to install a library. Just copy and paste the below code into the head section of your HTML file.</p><br>
+<div class="code">
+<pre>
+<span class="silver">&lt;</span><span class="pink">script </span><span class="green">src</span><span class="silver">&equals;"</span><span class="blue">https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@main/QueFlow.min.js</span><span class="silver">"&gt;&lt;/</span><span class="pink">script</span><span class="silver">&gt;</span>
+</pre>
+</div>
+</div>
 
+<div class="section" id="qs">
+<h1 class="heading">Quick Start</h1>
+<p>QueFlowJS is a lightweight library which has 3 core methods: <span class="green">iRender()</span>, <span class="green">Render()</span>, and <span class="green">Signal()</span>.
+</p><br>
+<p>Create a reactive data with the <b class="green">Signal()</b> method. The <span class="green">Signal()</span> method only accepts one argument, which is the reactive data.</p><br>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Signal_1" src="https://codepen.io/Dayson9/embed/oNRYRxy?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/oNRYRxy">
+  Signal_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+<br><br><br>
+<p>Easily render UI using the <b class="green">Render()</b> method. This method accepts only two arguments, which is the HTML string to render and the element to render it on.</p><br>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomNmeE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/pomNmeE">
+  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+</div>
+</div>
+
+<div class="page" id="apis">
+  <div class="section">
+  <h1 class="heading">The API Reference</h1>
+  <p class="small">QueFlow has just 3 core methods for managing and rendering reactive state UI.</p>
+ <ol class="blue">
+   <li onclick="toPage('render')">Render()</li>
+   <li onclick="toPage('irender')">iRender()</li>
+   <li onclick="toPage('signal')">Signal()</li>
+ </ol>
+  </div>
+</div>
+
+<div class="page" id="demos">
+  <div class="section">
+   <h1 class="heading">Demos</h1>
+<p class="small">To familiarise yourself with QueFlowJS, here are some demos you can experiment with.</p> 
+ <ol class="blue">
+   <li><a href="#" target="_blank">Date-Time</a></li>
+   <li><a href="#" target="_blank">Button Plus Plus</a></li>
+   <li><a href="#" target="_blank">Mirror Typing</a></li>
+   <li><a href="#" target="_blank">Change its color</a></li>
+    <li><a href="#" target="_blank">Color Transition</a></li>
+ </ol>
+</div>
+</div>
+
+<div class="page" id="render">
+<div class="section">
+<h1 class="heading">The Render() method</h1><br>
+<p>The <span class="green">Render()</span> method is primarily used for parsing html/jsx content into an element.</p><br>
+<div class="code">
+ <pre>Syntax: <span class="blue">Render</span><span class="silver">( </span><span class="green">jsx</span><span class="silver"> , </span><span class="green">app</span><span class="silver"> )</span></pre>
+</div> <br>
+<p>The <span class="green">Render()</span> method accepts two arguments as shown above; the JSX/HTML to render and the element the JSX/HTML would be rendered on.</p><br>
+<p>For example:</p>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomNmeE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/pomNmeE">
+  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+<br><br><br>
+<p>It also supports data-binding. The jsx to render can also contain some binded data.</p>
+<br>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_2" src="https://codepen.io/Dayson9/embed/zYQoQdp?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/zYQoQdp">
+  Render_2</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+<br><br><br>
+<p>You can also call the function multiple times.</p><br>
+<div class="code">
+  <pre>
+    
+  </pre>
+</div><br><br><br>
+<p>To see the <span class="green">Render()</span> method in action, you can <a href="#">try it out on codepen.</a></p>
+</div>
+</div>
+
+<div class="page" id="irender">
+<div class="section">
+  <h1 class="heading">The iRender() method</h1>
+</div>
+</div>
+
+<div class="page" id="signal">
+<div class="section">
+  <h1 class="heading">The Signal() method</h1>
+</div>
+</div>
+
+
+<hr>
+<div class="footer">
+<div class="col">
+<span class="blue" onclick="toPage('home')">Getting started</span>
+<span class="blue" onclick="toPage('apis')">API Reference</span>
+<span class="blue" onclick="toPage('demos')">Demos</span>
+</div>
+
+<div class="stm">
+<span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+</div>
+</div>
 <script src="script.js"></script>
 </body>
 

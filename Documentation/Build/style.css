@@ -1,4 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway');
+
+body{
+margin: 0;
+padding: 0;
+}
+
+html{
+scroll-behavior: smooth;
+}
+
+*{
+transition: .3s!important;
+}
+
+.page{
+width: 100vw;
+min-height: 130px;
+background: transparent;
+}
+
+.page:not(#home){
+padding-left: 2%;
+display: none;
+visibility: none;
+}
+
+.small{
+font-size: 1rem;
+}
+
+ol{
+list-style-type: square;
+font-family: "Poppins";
+margin-left: 10%;
+}
+
+ol li{
+margin-top: 10px;
+}
+
+.blue{
+color: cornflowerblue;
+}
+
+.pink{
+color: #FD78E9;
+}
+
+.silver{
+color: #B3B3B3;
+}
+
+.green{
+color: #158A81;
+}
+
+.code{
+width: 90%;
+height: 65px;
+background: #EFEFEF;
+border-radius: 2px;
+display: flex;
+flex-direction: row;
+justify-content: center;
+}
+
+.code pre{
+height: 100%;
+width: 100%;
+text-align: left;
+}
+
+p, span{
+font-family: "Poppins";
+}
+
+a{
+color: cornflowerblue;
+}
+
 #logo{
 width: 45px;
 height: 45px;
+}
+
+
+.heading{
+font-size: 1.7rem;
+font-weight: 600!important;
+font-family: "Raleway"!important;
+}
+
+.footer{
+background: transparent;
+}
+
+.col{
+width: 100%;
+height: 60%;
+background: transparent;
+}
+
+.col span{
+display: block;
+margin-bottom: 5px;
+}
+
+.stm{
+width: 100%;
+height: 30%;
+transform: translateY(70px);
+text-align: center;
 }

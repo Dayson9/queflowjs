@@ -1,3 +1,5 @@
+/*! QueFlowJS | (c) 2024 Dayson9 | MIT License | http://github.com/Dayson9/QueFlowJS */
+
 var QueFlow = {
     dataQF: [],
     counterQF: 0,
@@ -231,3 +233,4 @@ var QueFlow = {
 };
 
 Object.freeze(QueFlow);
+

@@ -39,7 +39,46 @@ var QueFlow = {
 
         return [decision, QueFlow.convert(len, temp)];
     },
+    
+    filterEls: () =>{
+    QueFlow.Ln(true);
+    QueFlow.dataQF = QueFlow.dataQF.filter((data) =>{
+    let el = QueFlow.select(data.qfid);
+    if(el){
+    return data;
+    }
+    });
+    QueFlow.Ln(false);
+    },
+    
+    updateDOM: (key) =>{
+        let v, len, el;
+        QueFlow.filterEls();
+        for(let pieces of QueFlow.dataQF){
+	
+        len = QueFlow.tempLen(pieces.template);
 
+        if (pieces.qfid != "") {
+        el = QueFlow.select(pieces.qfid);
+        if(el){
+        v = QueFlow.needsUpdate(pieces.template, key, len);
+        if (v[0]) {
+        if (QueFlow.notEvent(pieces.key)) {
+        if (pieces.key === "class") {
+        el[pieces.key+"Name"] = v[1];
+        }else{
+        el[pieces.key] = v[1];
+             }
+        }else{
+        el.addEventListener(pieces.key.slice(2), v[1]);
+             }
+           }
+        }else{
+           console.error("An error occurred while updating the DOM");
+           }
+         }
+       }
+     },
 
     Signal: (data) => {
         let item = (typeof data != "object")? {value: data} : JSON.parse(JSON.stringify(data));
@@ -48,36 +87,15 @@ var QueFlow = {
         let handler = {
         set(target, key, value) {
         target[key] = value;
-        let v, len, el;
-        for(let pieces of QueFlow.dataQF){
-	
-        len = QueFlow.tempLen(pieces.template);
-
-        if(pieces.qfid != ""){
-        el = QueFlow.select(pieces.qfid);
-        v = QueFlow.needsUpdate(pieces.template, key, len);
-
-        if(v[0]){
-        if(QueFlow.notEvent(pieces.key)){
-        if(pieces.key === "class"){
-        el[pieces.key+"Name"] = v[1];
-        }else{
-        el[pieces.key] = v[1];
-             }
-                    } else {
-                    el.addEventListener(pieces.key.slice(2), v[1]);
-                    }
-                }
-            }
+        QueFlow.updateDOM(key);
         }
-     }
-   }
+        }
         proxy = new Proxy(item, handler);
         return proxy;
    },
 
     parentType: (element) =>{
-        let children = element.querySelectorAll("*")??0;
+        let children = element.querySelectorAll("*") || 0;
         return (children.length > 0) ? [true, children] : [false];
     },
 
@@ -95,8 +113,10 @@ var QueFlow = {
       },
 
     strBetween: (str, f, s) => {
+      let output = "";
         let indexF = str.indexOf(f)+2, indexS = str.indexOf(s);
-        return str.slice(indexF, indexS);
+        output = str.slice(indexF, indexS);
+        return (!output) ? "" : output;
     },
       
       convert: (len, reff) => {
@@ -109,17 +129,21 @@ var QueFlow = {
        }
        }
        catch (error) {
-       console.error("An error occurred while parsing JSX", error);
+       console.error("An error occurred while parsing JSX/HTML", error);
        }
        return out;
       },
       
     attr: (el) => {
         let arr = [];
+        try{
         let att, i = 0, atts = el.attributes, n = atts.length;
         for (i =0; i < n; i++){
         att = atts[i];
         arr.push({attribute: att.nodeName, value: att.nodeValue});
+        }
+        } catch (error) {
+        console.error("An error occurred while getting the attributes of "+el, error);
         }
         return arr;
     },
@@ -145,9 +169,8 @@ var QueFlow = {
         let div = document.createElement("div"), children, out, inner = "";
 
         div.innerHTML = jsx;
-
+        try{
         children = div.querySelectorAll("*");
-
         children.forEach((c) =>{
         if(!QueFlow.parentType(c)[0]){
         let attr = QueFlow.attr(c);
@@ -165,6 +188,9 @@ var QueFlow = {
         out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid);
         }
         });
+         }  catch (error) {
+           console.error("An error occurred while processing JSX/HTML", error);
+         }
         div.remove();
 
         return out;
@@ -178,21 +204,29 @@ var QueFlow = {
         }
     },
 
-    Render: (jsx, pp) => {
-        let app = document.querySelector(pp);
+    Render: (jsx, selector) => {
+        let app = document.querySelector(selector);
+        if(app){
         QueFlow.Ln(true);
         app.innerHTML = QueFlow.jsxToHTML(jsx);
         QueFlow.Ln(false);
+        }else{
+        console.error("An element with the provided selector: ", selector, "does not exist");
+        }
     }, 
 
-    iRender: (appl) => {
-        let app = document.querySelector(appl);
+    iRender: (selector) => {
+        let app = document.querySelector(selector);
+        if(app){
         if(QueFlow.parentType(app)[0]){
         QueFlow.Ln(true);
         app.innerHTML = QueFlow.jsxToHTML(app.innerHTML);
         QueFlow.Ln(false);
-      }
-      }
+        }
+        }else{
+        console.error("An element with the provided selector: ", selector, "does not exist");
+        }
+        }
 };
 
 Object.freeze(QueFlow);

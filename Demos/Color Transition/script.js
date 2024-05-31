@@ -1,4 +1,4 @@
-const {iRender, Signal} = QueFlow, colours = ["red", "orange", "green" , "lightgreen",  "cyan", "skyblue", "lightblue", "cornflowerblue", "dodgerblue", "hotpink", "darkorchid", "indigo", "violet"];
+const {iRender, Signal} = QueFlow, colours = ["crimson", "red", "orange", "green" , "lightgreen",  "cyan", "skyblue", "lightblue", "cornflowerblue", "dodgerblue", "pink","hotpink", "purple", "darkorchid", "indigo", "violet"];
 var counter = 0;
 // Create a reactive data
 const color = Signal(colours[0]);

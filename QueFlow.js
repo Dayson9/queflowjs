@@ -4,8 +4,7 @@ var QueFlow = {
     dataQF: [],
     counterQF: 0,
     select: (qfid) => {
-        let el = document.querySelector("[data-qfid="+qfid+"]");
-        return el;
+        return document.querySelector("[data-qfid="+qfid+"]");
     },
 
     tempLen: (temp) => {
@@ -13,7 +12,7 @@ var QueFlow = {
         temp = "";
         }
 
-        let len = 0, reg, reg1, x, x1;
+        let reg, reg1, x, x1;
 
         reg = /\{\{/g;
         reg1 = /\}\}/g;
@@ -21,50 +20,36 @@ var QueFlow = {
         x = (temp.match(reg) == null ? 0 : temp.match(reg));
         x1 = (temp.match(reg1) == null ? 0 : temp.match(reg1));
 
-        if(x.length > x1.length){
-        len = x.length;
-        }else{
-        len = x1.length;
-        }
-
-
-        return len;
+        return (x.length > x1.length) ? x.length : x1.length;
     },
 
     notEvent : (str) => {
         let reg = /^[on]{1}.{1,}$/;
-        return (reg.test(str) === true) ? false: true;
+        return !reg.test(str);
     },
 
     needsUpdate: (temp, key, len) => {
         let objName, decision = false;
 
-
         if(!temp){
-        temp = ""
+        temp = "";
         }
 
-        if(temp.includes(key)){
-        decision = true;
-        temp = QueFlow.convert(len, temp);
-        }else{
-        decision = false;
-        temp = QueFlow.convert(len, temp);
-        }
+        decision = temp.includes(key);
 
-        return [decision, temp];
+        return [decision, QueFlow.convert(len, temp)];
     },
 
 
-    Signal: (it) => {
-        let item = (typeof it != "object")? {value: it} : JSON.parse(JSON.stringify(it));
-
+    Signal: (data) => {
+        let item = (typeof data != "object")? {value: data} : JSON.parse(JSON.stringify(data));
+        let proxy;
 
         let handler = {
         set(target, key, value) {
         target[key] = value;
         let v, len, el;
-        for(pieces of QueFlow.dataQF){
+        for(let pieces of QueFlow.dataQF){
 	
         len = QueFlow.tempLen(pieces.template);
 
@@ -78,7 +63,7 @@ var QueFlow = {
         el[pieces.key+"Name"] = v[1];
         }else{
         el[pieces.key] = v[1];
-                        }
+             }
                     } else {
                     el.addEventListener(pieces.key.slice(2), v[1]);
                     }
@@ -87,64 +72,48 @@ var QueFlow = {
         }
      }
    }
-        proxxy = new Proxy(item, handler);
-        return proxxy;
+        proxy = new Proxy(item, handler);
+        return proxy;
    },
 
     parentType: (element) =>{
         let children = element.querySelectorAll("*")??0;
-
-        if(children.length > 0){
-        return [true, children];
-        }else{
-        return [false];
-      }
+        return (children.length > 0) ? [true, children] : [false];
     },
 
-    dom: (tagName, attribs = [], ...children) => {
-        let el = document.createElement(tagName), len = attribs.length, i;
+    dom: (tagName, attribs = [], children) => {
+        let el = document.createElement(tagName), len = attribs.length, i = 0;
         for(i=0; i<len; i++){
         let attrib = attribs[i].attribute;
         let value = attribs[i].value;
         el.setAttribute(attrib, value);
-        };
-
-        children.forEach((child) =>{
-        if(child instanceof Node){
-        el.appendChild(child);
-        }else{
-        el.innerHTML+= child;
         }
-        });
+        
+        el.innerHTML = children;
 
         return el;
       },
 
     strBetween: (str, f, s) => {
-        let out = "";
- 
-        let indexF = str.indexOf(f)+2;
-        let indexS = str.indexOf(s);
-        out = str.slice(indexF, indexS);
-
-        return out;
+        let indexF = str.indexOf(f)+2, indexS = str.indexOf(s);
+        return str.slice(indexF, indexS);
     },
-
-    convert: (len, reff) => {
-        let extracted, parsed;
-
-        for(i=0; i<len; i++){
-        if(reff.includes("{{") && reff.includes("}}")){
-        extracted = QueFlow.strBetween(reff, "{{", "}}");
-
-        parsed = (new Function("return "+extracted))();
-        reff = reff.replace("{{"+extracted+"}}", parsed);
-        }
-        }
-
-        return reff;
+      
+      convert: (len, reff) => {
+       let out = reff, i = 0, extracted = "", parsed = "";
+       try{
+       for(i = 0; i < len; i++){
+       extracted = QueFlow.strBetween(out, "{{", "}}");
+       parsed = Function('"use-strict"; return '+extracted)();
+       out = out.replaceAll("{{"+extracted+"}}", parsed);
+       }
+       }
+       catch (error) {
+       console.error("An error occurred while parsing JSX", error);
+       }
+       return out;
       },
-
+      
     attr: (el) => {
         let arr = [];
         let att, i = 0, atts = el.attributes, n = atts.length;
@@ -159,14 +128,17 @@ var QueFlow = {
         let component = [], parsed, len, cpy;
 
         len = QueFlow.tempLen(ref);
-        parsed = QueFlow.convert(len, ref);
         arg.forEach((arr) =>{
+        if(arr.value.includes("{{") && arr.value.includes("}}")){
         component.push({template: arr.value, key: arr.attribute, qfid: id});
+        }
         });
 
         cpy = QueFlow.dataQF;
         QueFlow.dataQF= [...cpy, ...component];
-        return [parsed, component];
+        
+       parsed = QueFlow.convert(len, ref);
+        return parsed;
     },
 
     jsxToHTML: (jsx) => {
@@ -176,7 +148,8 @@ var QueFlow = {
 
         children = div.querySelectorAll("*");
 
-        for(c of children){
+        children.forEach((c) =>{
+        if(!QueFlow.parentType(c)[0]){
         let attr = QueFlow.attr(c);
         attr.push({attribute: "innerText", value: c.innerText});
 
@@ -188,20 +161,10 @@ var QueFlow = {
         break;
         }
         }
-
-        let ch = QueFlow.parentType(c);
-
-        if(ch[0]){
-        out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid)[0];
-        }else{
-        attr.push({
-        attribute: "innerText",
-        value: c.innerText
+        
+        out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid);
+        }
         });
-        out = QueFlow.parseQF(attr, div.innerHTML, c.dataset.qfid)[0];
-        }
-        }
-
         div.remove();
 
         return out;
@@ -233,4 +196,3 @@ var QueFlow = {
 };
 
 Object.freeze(QueFlow);
-

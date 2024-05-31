@@ -1,20 +1,24 @@
 var target, el = {};
 
-const pages = document.querySelectorAll(".page");
+const pages = document.querySelectorAll(".page"), loader = document.querySelector("#loader");
 
 const toPage = (id, con) =>{
+let elem = document.getElementById(id);
+
+elem.style.visibility = "hidden";
+elem.style.display = "none";
+
+loader.style.display = "block";
+loader.style.visibility = "visible";
+
 let a = document.createElement("a");
 a.href = "#nav";
+
 pages.forEach((page) =>{
 if(page.id != id){
 page.style.display = "none";
 }
 });
-
-let elem = document.getElementById(id);
-
-elem.style.display = "block";
-elem.style.visibility = "hidden";
 
 a.click();
 
@@ -24,9 +28,10 @@ target.classList.remove('is-active');
 }
 
 setTimeout(() => {
-
+loader.style.display = "none";
+elem.style.display = "block";
 elem.style.visibility = "visible";
-}, 1400);
+}, 1809);
 
 }
 

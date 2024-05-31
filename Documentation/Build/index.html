@@ -29,6 +29,17 @@
     </div>
   </div>
 </nav>
+<div id="loader" class="section">
+<div class="skeleton-block"></div>
+
+<div class="skeleton-lines">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+</div>
 <div class="page" id="home">
      <div class="section">
        <h1 class="title" style="color: #158A81">QueFlow</h1>
@@ -104,17 +115,14 @@
 <h1 class="heading">The Render() method</h1><br>
 <p>The <span class="green">Render()</span> method is primarily used for parsing html/jsx content into an element.</p><br>
 <div class="code">
- <pre>Syntax: <span class="blue">Render</span><span class="silver">( </span><span class="green">jsx</span><span class="silver"> , </span><span class="green">app</span><span class="silver"> )</span></pre>
+ <pre>Syntax: <span class="blue">Render</span><span class="silver">( </span><span class="green">jsx</span><span class="silver"> , </span><span class="green">parentSelector</span><span class="silver"> )</span></pre>
 </div> <br>
-<p>The <span class="green">Render()</span> method accepts two arguments as shown above; the JSX/HTML to render and the element the JSX/HTML would be rendered on.</p><br>
-<p>For example:</p>
-<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomNmeE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/Dayson9/pen/pomNmeE">
-  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
-  on <a href="https://codepen.io">CodePen</a>.
-</iframe>
-<br><br><br>
-<p>It also supports data-binding. The jsx to render can also contain some binded data.</p>
+<p>The <span class="green">Render()</span> function in QueFlowJS is used to render JSX (JavaScript XML) code onto the specified parent element in the HTML document.</p>
+<p>### Parameters:</p>
+<p>1. `jsx` (string): Required. The JSX code that needs to be rendered onto the DOM.</p>
+<p>2. `parentSelector` (string): Required. The CSS selector for the parent element where the JSX code will be rendered.</p>
+<br>
+<p>For example: </p>
 <br>
 <iframe height="300" style="width: 100%;" scrolling="no" title="Render_2" src="https://codepen.io/Dayson9/embed/zYQoQdp?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
   See the Pen <a href="https://codepen.io/Dayson9/pen/zYQoQdp">
@@ -122,28 +130,121 @@
   on <a href="https://codepen.io">CodePen</a>.
 </iframe>
 <br><br><br>
-<p>You can also call the function multiple times.</p><br>
+<div class="message is-info">
+<div class="message-header">Note:</div>
+<div class="message-body smaller">
+<p>- Before calling <span class="green">Render()</span>, make sure that all necessary components and data bindings are properly defined in the JSX code.</p>
+<p>- It's important to ensure that the correct parent selector is provided to render the JSX content in the desired location on the webpage.</p>
+</div>
+</div>
+<br>
+<p>By following these steps, you can effectively use the <span class="green">Render()</span> function provided by QueFlowJS to render dynamic content onto your webpage using JSX syntax.</p>
+<br>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomNmeE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/pomNmeE">
+  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+<br><br><br>
+<p>The <span class="green">Render()</span> function can also be called multiple times.</p><br>
 <div class="code">
   <pre>
     
   </pre>
 </div><br><br><br>
-<p>To see the <span class="green">Render()</span> method in action, you can <a href="#">try it out on codepen.</a></p>
+<div class="message is-warning">
+ <div class="message-header">
+   <p>Warning ⚠️</p>
+ </div> 
+ <div class="message-body smaller">
+   <p>While the <span class="green">Render()</span> method is very useful, you must be careful while using it.</p> <p>An attacker might pose a threat by trying to inject malicious code into your site.</p> <p>To prevent that, make sure all inputs are sanitized or filtered before use</p>
+</div>
+</div>
+<p>To see the <span class="green">Render()</span> method in action, you can try out the <a href="#">live demo</a> on codepen.</p>
 </div>
 </div>
 
 <div class="page" id="irender">
 <div class="section">
-  <h1 class="heading">The iRender() method</h1>
+  <h1 class="heading">The iRender() method</h1><br><br>
+  <div class="code">
+ <pre>Syntax: <span class="blue">iRender</span><span class="silver">( </span><span class="green">app</span><span class="silver"> )</span></pre>
+</div> <br><br>
+ <p>The <span class="green">iRender()</span> function is a method that is used to render an HTML template provided inside a specified DOM element, considering the presence of data bindings defined with double curly braces `{{ }}`.</p>
+<br>
+<p>Parameters</p>
+<p>- `app` (string): It represents the query selector of the DOM element where the HTML template will be rendered.</p>
+<br><br>
+<p>Usage</p>
+<p>To use the `iRender()` method, you can call it with a valid CSS selector as its argument, indicating the DOM element where you want to render an HTML template with data bindings.</p><br>
+<p>Example:</p>
+
+<div class="code">
+  <pre>
+    
+  </pre>
+</div>
+<br><br>
+
+<div class="message is-info">
+ <div class="message-header">Note</div>
+ 
+<div class="message-body smaller">
+<p>- Make sure that your HTML template contains data bindings in the format `{{data}}` or {{data.key}} to take advantage of dynamic rendering using this method.</p>
+<p>- Ensure that any necessary stylesheets are included in your HTML document before using this method to render your templates correctly.</p>
+</div>
+</div>
+ <br><br>
+ <div class="code">
+   <pre>
+     
+   </pre>
+ </div>
 </div>
 </div>
 
 <div class="page" id="signal">
 <div class="section">
-  <h1 class="heading">The Signal() method</h1>
-</div>
-</div>
+  <h1 class="heading">The Signal() method</h1><br>
+<p>The `Signal()` method is a part of the QueFlowJS library, which provides functionality for data binding and reactivity in JavaScript applications.</p>
+<p>It creates a proxy object using the `Proxy` constructor to monitor changes to the target object and trigger updates in the DOM based on those changes.</p>
+<br><br>
+  <div class="code">
+ <pre>Syntax: <span class="blue">Signal</span><span class="silver">( </span><span class="green">data</span><span class="silver"> )</span></pre>
+</div><br><br>
 
+<p>- `data`: A JavaScript object or value that you want to make reactive.</p>
+<br>
+<p>Return Value</p>
+<p>The `Signal()` method returns a proxy object that wraps the provided data. Any changes made to this proxy object will trigger updates in the DOM based on predefined templates and conditions.</p>
+<br><br>
+<p>Example Usage</p>
+<br><br>
+
+<div class="code">
+  <pre>
+    
+  </pre>
+</div>
+<br><br>
+<!-- ```javascript
+// Create a reactive data object
+let reactiveData = QueFlow.Signal({ count: 0 });
+
+// Update the count property
+reactiveData.count = 5; // This change will trigger updates in the DOM
+```
+!-->
+
+
+<p>Usage Recommendations</p><br>
+<p>- The `Signal()` method is particularly useful for building reactive interfaces and components where changes in data should automatically trigger updates in the UI.</p>
+<p>- It is essential to define templates within your HTML or JSX content that will be monitored by the QueFlow library for dynamic updates.</p>
+<p>- Ensure that proper event handling and conditions are set up within your templates to control how updates are applied based on data changes.</p>
+<br><br>
+<p>By integrating the `Signal()` method into your JavaScript applications, you can achieve seamless reactivity and data binding capabilities with ease.</p>
+</div>
+</div>
 
 <hr>
 <div class="footer">

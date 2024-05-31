@@ -15,13 +15,13 @@ scroll-behavior: smooth;
 transition: .3s!important;
 }
 
-.page{
+.page, #loader{
 width: 100vw;
 min-height: 130px;
 background: transparent;
 }
 
-.page:not(#home){
+.page:not(#home), #loader{
 padding-left: 2%;
 display: none;
 visibility: none;
@@ -29,6 +29,10 @@ visibility: none;
 
 .small{
 font-size: 1rem;
+}
+
+.smaller{
+font-size: 0.9rem;
 }
 
 ol{
@@ -113,4 +117,14 @@ width: 100%;
 height: 30%;
 transform: translateY(70px);
 text-align: center;
+}
+
+@media (min-width: 768px){
+.message{
+width: 35%;
+}
+
+.code{
+width: 40%;
+}
 }

@@ -1,9 +1,9 @@
 var target, el = {};
 
-const pages = document.querySelectorAll(".page"), loader = document.querySelector("#loader");
+const pages = document.querySelectorAll(".page"), loader = document.querySelector("#loader"), h1 = document.querySelectorAll("h1");
 
 const toPage = (id, con) =>{
-let elem = document.getElementById(id);
+let elem = document.getElementById(id), int = (Math.random()*1800)+10;
 
 elem.style.visibility = "hidden";
 elem.style.display = "none";
@@ -31,11 +31,17 @@ setTimeout(() => {
 loader.style.display = "none";
 elem.style.display = "block";
 elem.style.visibility = "visible";
-}, 1809);
+}, int);
 
 }
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
+ 
+ h1.forEach((el) =>{
+el.classList.add("grotesk-heading");
+});
   
   const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
 
@@ -55,5 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
   });
+
+
 
 });

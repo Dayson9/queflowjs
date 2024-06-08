@@ -11,8 +11,19 @@ html{
 scroll-behavior: smooth;
 }
 
-*{
+*:not(.code){
 transition: .3s!important;
+font-family: "Raleway", sans-serif;
+}
+
+.grotesk-heading, .title{
+font-family: "Cabinet Grotesk Medium"!important;
+font-size: 25px;
+font-weight: 800;
+}
+
+.navbar-burger:hover{
+background: #036058;
 }
 
 .page, #loader{
@@ -28,7 +39,7 @@ visibility: none;
 }
 
 .small{
-font-size: 1rem;
+font-size: 1.3rem;
 }
 
 .smaller{
@@ -69,6 +80,7 @@ border-radius: 2px;
 display: flex;
 flex-direction: row;
 justify-content: center;
+font-family: "sans-serif"!important;
 }
 
 .code pre{
@@ -79,6 +91,7 @@ text-align: left;
 
 p, span{
 font-family: "Poppins";
+font-size: 0.9em;
 }
 
 a{
@@ -94,7 +107,7 @@ height: 45px;
 .heading{
 font-size: 1.7rem;
 font-weight: 600!important;
-font-family: "Raleway"!important;
+font-family: "Cabinet Grotesk Medium"!important;
 }
 
 .footer{
@@ -107,9 +120,10 @@ height: 60%;
 background: transparent;
 }
 
-.col span{
+.col span, col a{
 display: block;
 margin-bottom: 5px;
+text-decoration: none;
 }
 
 .stm{

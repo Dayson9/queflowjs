@@ -15,3 +15,4 @@ counter++;
 counter = 0;
 }
 }, 500);
+console.log(QueFlow.dataQF);

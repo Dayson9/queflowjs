@@ -4,7 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>QueFlowJS Documentation</title>
+
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  
+<link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css"/>
+
 <link rel="stylesheet" href="bulma.min.css">
   <link rel="stylesheet" href="style.css"/>
 </head>
@@ -13,7 +18,8 @@
 <nav class="navbar is-transparent" id="nav">
   <div class="navbar-brand">
 <img id="logo" src="../images/queflow.png" alt="QueFlowJS Logo">
-    <div class="navbar-burger js-burger" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+<a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+    <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
       <span></span>
       <span></span>
       <span></span>
@@ -24,8 +30,9 @@
   <div id="navbarExampleTransparentExample" class="navbar-menu">
     <div class="navbar-start" id="navstart">
       <div class="navbar-item" onclick="toPage('home', true)">Getting started</div>
-        <div class="navbar-item" onclick="toPage('apis', true)"> API Reference </div>
-        <div class="navbar-item" onclick="toPage('demos', true)">Demos</div>
+      <div class="navbar-item" onclick="toPage('apis', true)">API Reference</div>
+      <div class="navbar-item" onclick="toPage('demos', true)">Demos</div>
+      <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
     </div>
   </div>
 </nav>
@@ -47,15 +54,15 @@
       </div>
       
 <div class="section">
-<h1 class="heading">Getting Started</h1>
+<h1>Getting Started</h1>
 <p>Let's quickly see how we can get started with QueFlow</p>
 <a href="#install">#Installation</a>
 <a href="#qs">#Quick Start</a>
 </div>
 <div class="section" id="install">
-<h1 class="heading">Installation</h1>
-<p>To install QueFlow, you either can use CDN, go to its <a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub repository</a> or <a href="https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@v1.0.0/QueFlow.min.js" target="_blank">direct download</a>.</p><br>
-<h1 class="subtitle">Using CDN</h1>
+<h1>Installation</h1>
+<p>To install QueFlow, you either can use CDN, go to its <a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub repository</a> or <a href="https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@main/QueFlow.min.js" target="_blank">direct download</a>.</p><br>
+<h1>Using CDN</h1>
 <p>CDN is the fastest way to install a library. Just copy and paste the below code into the head section of your HTML file.</p><br>
 <div class="code">
 <pre>
@@ -65,12 +72,12 @@
 </div>
 
 <div class="section" id="qs">
-<h1 class="heading">Quick Start</h1>
+<h1 class="heading grotesk">Quick Start</h1>
 <p>QueFlowJS is a lightweight library which has 3 core methods: <span class="green">iRender()</span>, <span class="green">Render()</span>, and <span class="green">Signal()</span>.
 </p><br>
 <p>Create a reactive data with the <b class="green">Signal()</b> method. The <span class="green">Signal()</span> method only accepts one argument, which is the reactive data.</p><br>
 <iframe height="300" style="width: 100%;" scrolling="no" title="Signal_1" src="https://codepen.io/Dayson9/embed/oNRYRxy?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/Dayson9/pen/oNRYRxy">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/gOJmNRb">
   Signal_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
   on <a href="https://codepen.io">CodePen</a>.
 </iframe>
@@ -87,7 +94,7 @@
 <div class="page" id="apis">
   <div class="section">
   <h1 class="heading">The API Reference</h1>
-  <p class="small">QueFlow has just 3 core methods for managing and rendering reactive state UI.</p>
+  <p>QueFlow has just 3 core methods for managing and rendering reactive state UI.</p>
  <ol class="blue">
    <li onclick="toPage('render')">Render()</li>
    <li onclick="toPage('irender')">iRender()</li>
@@ -99,7 +106,7 @@
 <div class="page" id="demos">
   <div class="section">
    <h1 class="heading">Demos</h1>
-<p class="small">To familiarise yourself with QueFlowJS, here are some demos you can experiment with.</p> 
+<p>To familiarise yourself with QueFlowJS, here are some demos you can experiment with.</p> 
  <ol class="blue">
    <li><a href="#" target="_blank">Date-Time</a></li>
    <li><a href="#" target="_blank">Button Plus Plus</a></li>
@@ -112,16 +119,17 @@
 
 <div class="page" id="render">
 <div class="section">
-<h1 class="heading">The Render() method</h1><br>
+<h1>The Render() method</h1><br>
 <p>The <span class="green">Render()</span> method is primarily used for parsing html/jsx content into an element.</p><br>
 <div class="code">
  <pre>Syntax: <span class="blue">Render</span><span class="silver">( </span><span class="green">jsx</span><span class="silver"> , </span><span class="green">parentSelector</span><span class="silver"> )</span></pre>
 </div> <br>
-<p>The <span class="green">Render()</span> function in QueFlowJS is used to render JSX (JavaScript XML) code onto the specified parent element in the HTML document.</p>
+
 <p>### Parameters:</p>
 <p>1. `jsx` (string): Required. The JSX code that needs to be rendered onto the DOM.</p>
 <p>2. `parentSelector` (string): Required. The CSS selector for the parent element where the JSX code will be rendered.</p>
 <br>
+<p>The <span class="green">Render()</span> function in QueFlowJS is used to render JSX (JavaScript XML) code onto the specified parent element in the HTML document.</p><br>
 <p>For example: </p>
 <br>
 <iframe height="300" style="width: 100%;" scrolling="no" title="Render_2" src="https://codepen.io/Dayson9/embed/zYQoQdp?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
@@ -147,43 +155,43 @@
 </iframe>
 <br><br><br>
 <p>The <span class="green">Render()</span> function can also be called multiple times.</p><br>
-<div class="code">
-  <pre>
-    
-  </pre>
-</div><br><br><br>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomemXE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/pomemXE">
+  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
+<br><br><br>
 <div class="message is-warning">
  <div class="message-header">
    <p>Warning ⚠️</p>
  </div> 
  <div class="message-body smaller">
-   <p>While the <span class="green">Render()</span> method is very useful, you must be careful while using it.</p> <p>An attacker might pose a threat by trying to inject malicious code into your site.</p> <p>To prevent that, make sure all inputs are sanitized or filtered before use</p>
+   <p>While the <span class="green">Render()</span> method is very useful, you must be very careful while using it.</p> <p>An attacker might pose a threat by trying to inject malicious code into your site.</p> <p>To prevent that, make sure all inputs are sanitized or filtered before use.</p>
 </div>
 </div>
-<p>To see the <span class="green">Render()</span> method in action, you can try out the <a href="#">live demo</a> on codepen.</p>
+<p>To see the <span class="green">Render()</span> method in action, you can try out the <a href="https://codepen.io/Dayson9/pen/pomNmeE" target="_blank">live demo</a> on codepen.</p>
 </div>
 </div>
 
 <div class="page" id="irender">
 <div class="section">
-  <h1 class="heading">The iRender() method</h1><br><br>
+  <h1>The iRender() method</h1><br><br>
   <div class="code">
  <pre>Syntax: <span class="blue">iRender</span><span class="silver">( </span><span class="green">app</span><span class="silver"> )</span></pre>
 </div> <br><br>
- <p>The <span class="green">iRender()</span> function is a method that is used to render an HTML template provided inside a specified DOM element, considering the presence of data bindings defined with double curly braces `{{ }}`.</p>
-<br>
 <p>Parameters</p>
 <p>- `app` (string): It represents the query selector of the DOM element where the HTML template will be rendered.</p>
 <br><br>
+ <p>The <span class="green">iRender()</span> function is a method that is used to render an HTML template provided inside a specified DOM element, considering the presence of data bindings defined with double curly braces `{{ }}`.</p>
+<br>
 <p>Usage</p>
 <p>To use the `iRender()` method, you can call it with a valid CSS selector as its argument, indicating the DOM element where you want to render an HTML template with data bindings.</p><br>
 <p>Example:</p>
-
-<div class="code">
-  <pre>
-    
-  </pre>
-</div>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/YzbZodz?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/YzbZodz">
+  Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
 <br><br>
 
 <div class="message is-info">
@@ -194,18 +202,13 @@
 <p>- Ensure that any necessary stylesheets are included in your HTML document before using this method to render your templates correctly.</p>
 </div>
 </div>
- <br><br>
- <div class="code">
-   <pre>
-     
-   </pre>
- </div>
+<p>To see the <span class="green">iRender()</span> method in action, you can try out the <a href="https://codepen.io/Dayson9/pen/vYwxqEb" target="_blank">live demo</a> on codepen.</p>
 </div>
 </div>
 
 <div class="page" id="signal">
 <div class="section">
-  <h1 class="heading">The Signal() method</h1><br>
+  <h1>The Signal() method</h1><br>
 <p>The `Signal()` method is a part of the QueFlowJS library, which provides functionality for data binding and reactivity in JavaScript applications.</p>
 <p>It creates a proxy object using the `Proxy` constructor to monitor changes to the target object and trigger updates in the DOM based on those changes.</p>
 <br><br>
@@ -213,19 +216,18 @@
  <pre>Syntax: <span class="blue">Signal</span><span class="silver">( </span><span class="green">data</span><span class="silver"> )</span></pre>
 </div><br><br>
 
-<p>- `data`: A JavaScript object or value that you want to make reactive.</p>
+<p>- `data` (object): A JavaScript object or value that you want to make reactive.</p>
 <br>
-<p>Return Value</p>
+<p>Return Value : (object)</p>
 <p>The `Signal()` method returns a proxy object that wraps the provided data. Any changes made to this proxy object will trigger updates in the DOM based on predefined templates and conditions.</p>
 <br><br>
 <p>Example Usage</p>
 <br><br>
-
-<div class="code">
-  <pre>
-    
-  </pre>
-</div>
+<iframe height="300" style="width: 100%;" scrolling="no" title="Signal_1" src="https://codepen.io/Dayson9/embed/gOJmNRb?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/Dayson9/pen/gOJmNRb">
+  Signal_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>
 <br><br>
 <!-- ```javascript
 // Create a reactive data object
@@ -243,6 +245,7 @@ reactiveData.count = 5; // This change will trigger updates in the DOM
 <p>- Ensure that proper event handling and conditions are set up within your templates to control how updates are applied based on data changes.</p>
 <br><br>
 <p>By integrating the `Signal()` method into your JavaScript applications, you can achieve seamless reactivity and data binding capabilities with ease.</p>
+<p>To see the <span class="green">Signal()</span> method in action, you can try out the <a href="https://codepen.io/Dayson9/pen/gOJmNRb" target="_blank">live demo</a> on codepen.</p>
 </div>
 </div>
 
@@ -252,6 +255,7 @@ reactiveData.count = 5; // This change will trigger updates in the DOM
 <span class="blue" onclick="toPage('home')">Getting started</span>
 <span class="blue" onclick="toPage('apis')">API Reference</span>
 <span class="blue" onclick="toPage('demos')">Demos</span>
+<a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
 </div>
 
 <div class="stm">

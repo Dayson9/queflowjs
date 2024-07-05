@@ -22,10 +22,6 @@ font-size: 25px;
 font-weight: 800;
 }
 
-.navbar-burger:hover{
-background: #036058;
-}
-
 .page, #loader{
 width: 100vw;
 min-height: 130px;

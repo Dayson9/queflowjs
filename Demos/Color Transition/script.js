@@ -1,7 +1,9 @@
-const {iRender, Signal} = QueFlow, colours = ["crimson", "red", "orange", "green" , "lightgreen",  "cyan", "skyblue", "lightblue", "cornflowerblue", "dodgerblue", "pink","hotpink", "purple", "darkorchid", "indigo", "violet"];
+const {iRender, createSignal} = QueFlow;
+
+const colours = ["crimson", "red", "orange", "green" , "lightgreen",  "cyan", "skyblue", "lightblue", "cornflowerblue", "dodgerblue", "pink","hotpink", "purple", "darkorchid", "indigo", "violet"];
 var counter = 0;
 // Create a reactive data
-const color = Signal(colours[0]);
+const color = createSignal(colours[0]);
 
 // Render app
 iRender("#app");
@@ -15,4 +17,3 @@ counter++;
 counter = 0;
 }
 }, 500);
-console.log(QueFlow.dataQF);

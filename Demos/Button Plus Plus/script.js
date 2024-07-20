@@ -1,8 +1,8 @@
 // Destructuring assignment
-const {iRender, Signal} = QueFlow;
+const { iRender, createSignal } = QueFlow;
 
 // Create a reactive data
-const counter = Signal(1);
+const counter = createSignal(1);
 
 // Render app
 iRender("#app");

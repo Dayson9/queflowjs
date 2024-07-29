@@ -1,4 +1,4 @@
-const {iRender, createSignal} = QueFlow;
+const { iRender, createSignal } = QueFlow;
 
 const colours = ["crimson", "red", "orange", "green" , "lightgreen",  "cyan", "skyblue", "lightblue", "cornflowerblue", "dodgerblue", "pink","hotpink", "purple", "darkorchid", "indigo", "violet"];
 var counter = 0;
@@ -10,10 +10,10 @@ iRender("#app");
 
 // Color transition animation
 setInterval(() =>{
-color.value = colours[counter];
-if(counter != colours.length-1){
-counter++;
-}else{
-counter = 0;
-}
+  color.value = colours[counter];
+  if(counter != colours.length-1){
+    counter++;
+  }else{
+    counter = 0;
+  }
 }, 500);

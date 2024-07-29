@@ -1,8 +1,8 @@
 // Destructuring assignment
-const {iRender, createSignal} = QueFlow;
+const { iRender, createSignal } = QueFlow;
 
 // Create a reactive data
-const data = createSignal({text: ""});
+const data = createSignal({text: "", color: "teal"});
 
 
 // Render app

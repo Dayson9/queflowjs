@@ -5,7 +5,12 @@ const QueFlow = ((exports) => {
   // Stores data for all elements that are not in components.
   var dataQF = [],
     // Counter for generating unique IDs for elements with reactive data.
-    counterQF = 0;
+    counterQF = 0,
+
+    stylesheet = {
+      el: document.createElement("style"),
+      isAppended: false
+    };
 
   _this = {};
 
@@ -86,7 +91,7 @@ const QueFlow = ((exports) => {
       if (!elements[pieces.qfid]) {
         elements[pieces.qfid] = selectElement(pieces.qfid);
         if (!elements[pieces.qfid]) {
-          throw new Error("An error occurred while selecting element for QFID:", pieces.qfid);
+          throw new Error("An error occurred while selecting element for QFID: " + pieces.qfid);
           continue; // Skip to next element if selection failed
         }
       }
@@ -171,8 +176,15 @@ const QueFlow = ((exports) => {
 
   // Sanitizes a string to prevent potential XSS attacks.
   function sanitizeString(str) {
+    str = str.toString();
     return str.replace(/javascript:/gi, '').replace(/[^\w-_. ]/gi, function(c) {
-      return (c === "<" || c === ">") ? `&#${c.charCodeAt(0)};` : c;
+      if (c === ">") {
+        return "&gt;";
+      } else if (c === "<") {
+        return "&lt;";
+      } else {
+        return c;
+      }
     });
   }
 
@@ -185,26 +197,34 @@ const QueFlow = ((exports) => {
       parsed = "";
 
     try {
-      // Iterates through all placeholders in the template.
-      for (i = 0; i < len; i++) {
-        // Extracts the placeholder expression.
-        extracted = stringBetween(out, "{{", "}}");
+      if (len) {
+        // Iterates through all placeholders in the template.
+        for (i = 0; i < len; i++) {
+          // Extracts the placeholder expression.
+          extracted = stringBetween(out, "{{", "}}");
 
-        // Evaluates the placeholder expression.
-        parsed = Function('"use-strict"; return ' + extracted)().toString();
+          // Evaluates the placeholder expression.
+          parsed = Function('"use-strict"; return ' + extracted)().toString();
 
 
-        if (!indicator) {
-          // Replaces the placeholder with its evaluated value.
-          out = out.replace("{{" + extracted + "}}", parsed);
-        } else {
-          // Replaces the placeholder with its sanitized evaluated value.
-          out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+          if (!indicator) {
+            // Replaces the placeholder with its evaluated value.
+            out = out.replace("{{" + extracted + "}}", parsed);
+          } else {
+            // Replaces the placeholder with its sanitized evaluated value.
+            out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+          }
         }
+      } else {
+        out = JSON.parse(out);
       }
     } catch (error) {
-      throw new Error("An error occurred while parsing JSX/HTML", error);
+      let reg = /Unexpected token/i;
+      // Prevents some unnecessary errors from being thrown
+      if (!reg.test(error))
+        console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
     }
+
 
     // Returns the evaluated template string.
     return out;
@@ -241,41 +261,40 @@ const QueFlow = ((exports) => {
 
   // Converts JSX/HTML string into plain HTML, handling placeholders.
   function jsxToHTML(jsx) {
-    let div = document.createElement("div"),
+    let parser = new DOMParser(),
       children = [],
       out = "",
       attributes = [],
       data = [];
-
-    // Sanitizes the JSX/HTML string.
-    let sanitized = sanitizeString(jsx);
-
-    div.innerHTML = sanitized;
-    div.innerHTML = div.innerText;
+    let d = parser.parseFromString(jsx, "text/html"),
+      doc = d.body;
 
     try {
-      // Selects all child elements within the div.
-      children = div.querySelectorAll("*");
+      // Selects all child elements within the doc.
+      children = doc.querySelectorAll("*");
 
       // Iterates through each child element.
-      children.forEach((c) => {
+      for (let c of children) {
         // Checks if the element has no children.
         if (!hasChildren(c)[0]) {
           data = [...data, ...generateComponentData(c)];
         } else {
           data = [...data, ...generateComponentData(c, true)];
         }
-      });
+      };
 
     } catch (error) {
-      throw new Error("An error occurred while processing JSX/HTML", error);
+      let reg = /Unexpected token/i;
+      // Prevents some unnecessary errors from being thrown
+      if (!reg.test(error))
+        console.error("An error occurred while processing JSX/HTML:\n\n" + error);
     }
 
-    // Removes the temporary div element from the DOM.
-    div.remove();
+    // Removes the temporary doc element from the DOM.
+    doc.remove();
 
-    let len = countPlaceholders(div.innerHTML);
-    out = evaluateTemplate(len, div.innerHTML, true);
+    let len = countPlaceholders(doc.innerHTML);
+    out = evaluateTemplate(len, doc.innerHTML, true);
 
     // Returns the parsed HTML string.
     return [out, data];
@@ -288,6 +307,7 @@ const QueFlow = ((exports) => {
     // Checks if the selector is valid.
     if (app) {
       let result = jsxToHTML(jsx);
+
       // Re-renders the element's content.
       prep = result[0];
       dataQF = [...dataQF, ...result[1]];
@@ -378,6 +398,7 @@ const QueFlow = ((exports) => {
 
       if (child.style[attribute] || child.style[attribute] === "") {
         child.style[attribute] = evaluateTemplate(len, value);
+
         if ((attribute.toLowerCase()) !== "src") {
           child.removeAttribute(attribute);
         }
@@ -385,7 +406,7 @@ const QueFlow = ((exports) => {
 
 
       if (hasTemplate) {
-        (child.style[attribute] || child.style[attribute] === "") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+        (child.style[attribute] || child.style[attribute] === "") ? arr.push({ template: value, key: "style." + attribute, qfid: id })  :  arr.push({ template: value, key: attribute, qfid: id });
       }
 
 
@@ -396,9 +417,34 @@ const QueFlow = ((exports) => {
   }
 
 
-  // Defines a QComponent class 'for creating and managing components.
+  function objToStyle(selector = "", obj = {}) {
+    let keys = Object.keys(obj), style ='', len = keys.length;
+    
+    for (let i = 0; i < len; i++) {
+      style+= "\n"+selector+" "+keys[i]+" {"+obj[keys[i]]+"}\n";
+    }
+    
+    return style;
+  }
+
+  function initiateComponentStyle(selector = "", instance = Object) {
+    let styles = objToStyle(selector, instance.stylesheet);
+   
+    (stylesheet.el).textContent+= styles;
+    
+    if (!stylesheet.isAppended) {
+      document.head.appendChild(stylesheet.el);
+    }
+  }
+
+  /**
+   * Defines a QComponent class 'for creating and managing components.
+   * @param {String|Node} element    The element to mount component into
+   * @param {Object} options      Options i.e "data", "template"
+   * @return null
+   */
   class QComponent {
-    constructor(selector, options = {}) {
+    constructor(selector = "", options = {}) {
       // Assigns the current instance to _this.
       _this = this;
       // Stores the element associated with a component
@@ -418,9 +464,17 @@ const QueFlow = ((exports) => {
       // Stores the current 'freeze status' of the component
       this.isFrozen = false;
 
-      // Stores the components' reactive elements data
-      this.dataQF = [];
 
+      // Stores the component's stylesheet 
+      this.stylesheet = options.stylesheet;
+      
+      // Stores the component's reactive elements data
+      this.dataQF = [];
+      
+      if(!this.element.id) throw new Error("To use component scoped stylesheets, component's element must have a valid id")
+      // Initiates a component's stylesheet 
+      initiateComponentStyle(selector, this);
+      
       // Defines properties for the component instance.
       Object.defineProperties(this, {
         template: { value: this.options.template },
@@ -480,7 +534,6 @@ const QueFlow = ((exports) => {
       if (evaluated !== child[key]) {
         if (isNotEvent(key)) {
           child[key] = evaluated;
-
         } else {
           child.addEventListener(key.slice(2), evaluated);
         }
@@ -504,7 +557,7 @@ const QueFlow = ((exports) => {
         let len = countPlaceholders(template);
 
         evaluated = (key.includes("style.")) ? evaluateTemplate(len, template) : evaluateTemplate(len, template, true);
-
+        
         key = (key === "class") ? "className" : key;
         style(child, key, evaluated);
       }
@@ -512,11 +565,47 @@ const QueFlow = ((exports) => {
 
   }
 
+  function renderTemplate(input, props) {
+    let len = countPlaceholders(input),
+      i = 0;
+
+    for (i; i < len; i++) {
+      let extracted = stringBetween(input, "{{", "}}");
+      input = input.replaceAll("{{" + extracted + "}}", sanitizeString(props[extracted]));
+    }
+
+    return input;
+  }
+
+  /** Creates a class for managing reusable templates
+   * 
+   * @param {String|Node} element    The element to mount template into
+   * @param {String|Function} templateFunc    A function that returns string to make into a template
+   */
+  class Template {
+    constructor(el, templateFunc) {
+      this.element = el;
+      this.template = templateFunc;
+    }
+
+    renderWith(data, position = "append") {
+      let template = (this.template instanceof Function) ? this.template(data) : this.template;
+
+      let rendered = renderTemplate(template, data),
+        r = jsxToHTML(rendered),
+        el = document.querySelector(this.element),
+        html = el.innerHTML;
+
+      el.innerHTML = html + r[0];
+    }
+  }
+
   // Exports the public APIs of QueFlowJS.
   exports.Render = Render;
   exports.createSignal = createSignal;
   exports.iRender = iRender;
   exports.QComponent = QComponent;
+  exports.Template = Template;
 
   // Define the exports as an ES Module
   Object.defineProperty(exports, "__esModule", { value: true });

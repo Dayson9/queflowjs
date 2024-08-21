@@ -74,9 +74,9 @@
 
 <div class="section" id="qs">
 <h1 class="heading grotesk">Quick Start</h1>
-<p>QueFlowJS is a lightweight library which has 3 core methods: <span class="green">iRender()</span>, <span class="green">Render()</span>, and <span class="green">Signal()</span>.
+<p>QueFlowJS is a lightweight library which has 3 core methods: <span class="green">iRender()</span>, <span class="green">Render()</span>, and <span class="green">createSignal()</span>.
 </p><br>
-<p>Create a reactive data with the <b class="green">Signal()</b> method. The <span class="green">Signal()</span> method only accepts one argument, which is the reactive data.</p><br>
+<p>Create a reactive data with the <b class="green">createSignal()</b> method. The <span class="green">createSignal()</span> method only accepts one argument, which is the reactive data.</p><br>
 <iframe height="300" style="width: 100%;" scrolling="no" title="Signal_1" src="https://codepen.io/Dayson9/embed/gOJmNRb?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
   See the Pen <a href="https://codepen.io/Dayson9/pen/gOJmNRb">
     Signal_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
@@ -99,7 +99,7 @@
  <ol class="blue">
    <li onclick="toPage('render')">Render()</li>
    <li onclick="toPage('irender')">iRender()</li>
-   <li onclick="toPage('signal')">Signal()</li>
+   <li onclick="toPage('signal')">createSignal()</li>
  </ol>
   </div>
 </div>
@@ -217,18 +217,18 @@
 
 <div class="page" id="signal">
 <div class="section">
-  <h1>The Signal() method</h1><br>
-<p>The `Signal()` method is a part of the QueFlowJS library, which provides functionality for data binding and reactivity in JavaScript applications.</p>
+  <h1>The createSignal() method</h1><br>
+<p>The `createSignal()` method is a part of the QueFlowJS library, which provides functionality for data binding and reactivity in JavaScript applications.</p>
 <p>It creates a proxy object using the `Proxy` constructor to monitor changes to the target object and trigger updates in the DOM based on those changes.</p>
 <br><br>
   <div class="code">
- <pre>Syntax: <span class="blue">Signal</span><span class="silver">( </span><span class="green">data</span><span class="silver"> )</span></pre>
+ <pre>Syntax: <span class="blue">createSignal</span><span class="silver">( </span><span class="green">data</span><span class="silver"> )</span></pre>
 </div><br><br>
 
 <p>- `data` (object): A JavaScript object or value that you want to make reactive.</p>
 <br>
 <p>Return Value : (object)</p>
-<p>The `Signal()` method returns a proxy object that wraps the provided data. Any changes made to this proxy object will trigger updates in the DOM based on predefined templates and conditions.</p>
+<p>The `createSignal()` method returns a proxy object that wraps the provided data. Any changes made to this proxy object will trigger updates in the DOM based on predefined templates and conditions.</p>
 <br><br>
 <p>Example Usage</p>
 <br><br>
@@ -249,12 +249,12 @@ reactiveData.count = 5; // This change will trigger updates in the DOM
 
 
 <p>Usage Recommendations</p><br>
-<p>- The `Signal()` method is particularly useful for building reactive interfaces and components where changes in data should automatically trigger updates in the UI.</p>
+<p>- The `createSignal()` method is particularly useful for building reactive interfaces and components where changes in data should automatically trigger updates in the UI.</p>
 <p>- It is essential to define templates within your HTML or JSX content that will be monitored by the QueFlow library for dynamic updates.</p>
 <p>- Ensure that proper event handling and conditions are set up within your templates to control how updates are applied based on data changes.</p>
 <br><br>
-<p>By integrating the `Signal()` method into your JavaScript applications, you can achieve seamless reactivity and data binding capabilities with ease.</p>
-<p>To see the <span class="green">Signal()</span> method in action, you can try out the <a href="https://codepen.io/Dayson9/pen/gOJmNRb" target="_blank">live demo</a> on codepen.</p>
+<p>By integrating the `createSignal()` method into your JavaScript applications, you can achieve seamless reactivity and data binding capabilities with ease.</p>
+<p>To see the <span class="green">createSignal()</span> method in action, you can try out the <a href="https://codepen.io/Dayson9/pen/gOJmNRb" target="_blank">live demo</a> on codepen.</p>
 </div>
 </div>
 

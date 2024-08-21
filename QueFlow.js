@@ -57,7 +57,7 @@ const QueFlow = ((exports) => {
     decision = temp.includes(key);
 
     // Evaluates the template with the provided length.
-    return [decision, evaluateTemplate(len, temp, true)];
+    return [decision, evaluateTemplate(len, temp)];
   }
 
   // Filters out null elements from the given input [Array].
@@ -156,6 +156,8 @@ const QueFlow = ((exports) => {
     return new Proxy(item, handler);
   }
 
+  const b = str => stringBetween(str, "{{", "}}");
+
   // Checks if a DOM element has child elements.
   function hasChildren(element) {
     let children = element.querySelectorAll("*") || 0;
@@ -166,6 +168,7 @@ const QueFlow = ((exports) => {
 
   // Extracts the string between two delimiters in a given string.
   function stringBetween(str, f, s) {
+
     let output = "";
     let indexF = str.indexOf(f) + 2,
       indexS = str.indexOf(s);
@@ -176,46 +179,43 @@ const QueFlow = ((exports) => {
 
   // Sanitizes a string to prevent potential XSS attacks.
   function sanitizeString(str) {
-    str = str.toString();
-    return str.replace(/javascript:/gi, '').replace(/[^\w-_. ]/gi, function(c) {
-      if (c === ">") {
-        return "&gt;";
-      } else if (c === "<") {
-        return "&lt;";
-      } else {
-        return c;
-      }
-    });
+    let excluded_chars = [{ from: "&gt;", to: ">" }, { from: "&lt;", to: "<" }, { from: "<script>", to: "&lt;script&gt;" }, { from: "</script>", to: "&lt;/script&gt;" }];
+
+    str = new String(str);
+
+    for (let { from, to } of excluded_chars) {
+      str = str.replace(from, to);
+    }
+
+
+    return str.replace(/javascript:/gi, '');
   }
 
 
   // Evaluates a template string by replacing placeholders with their values.
-  function evaluateTemplate(len, reff, indicator) {
+  function evaluateTemplate(len, reff, indicator, arr) {
     let out = reff,
       i = 0,
       extracted = "",
-      parsed = "";
+      parsed = "",
+      ext = "";
 
     try {
+      // If length of placeholder expressions are not zero
       if (len) {
         // Iterates through all placeholders in the template.
         for (i = 0; i < len; i++) {
           // Extracts the placeholder expression.
           extracted = stringBetween(out, "{{", "}}");
-
-          // Evaluates the placeholder expression.
-          parsed = Function('"use-strict"; return ' + extracted)().toString();
-
-
-          if (!indicator) {
-            // Replaces the placeholder with its evaluated value.
-            out = out.replace("{{" + extracted + "}}", parsed);
-          } else {
-            // Replaces the placeholder with its sanitized evaluated value.
-            out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
-          }
+          //Sanitize extracted string
+          ext = sanitizeString(extracted);
+          // Parse extracted string
+          parsed = Function('"use-strict";' + ext)() || Function('"use-strict"; return ' + ext)();
+          // Replace placeholder expression with evaluated value
+          out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
         }
       } else {
+        // Else return it's parsed value
         out = JSON.parse(out);
       }
     } catch (error) {
@@ -245,12 +245,13 @@ const QueFlow = ((exports) => {
         att = atts[i];
         // Adds the attribute name and value to the array.
         let name = att.nodeName,
-          value = att.nodeValue;
+          value = att.nodeValue.trim();
+
 
         arr.push({ attribute: name, value: value });
       }
     } catch (error) {
-      throw new Error("An error occurred while getting the attributes of " + el, error);
+      throw new Error("An error occurred while getting the attributes of " + el + ", " + error);
     }
 
 
@@ -284,17 +285,16 @@ const QueFlow = ((exports) => {
       };
 
     } catch (error) {
-      let reg = /Unexpected token/i;
-      // Prevents some unnecessary errors from being thrown
-      if (!reg.test(error))
-        console.error("An error occurred while processing JSX/HTML:\n\n" + error);
+
+      console.error("An error occurred while processing JSX/HTML:\n\n" + error);
     }
+
+
+    let len = countPlaceholders(doc.innerHTML);
+    out = evaluateTemplate(len, doc.innerHTML);
 
     // Removes the temporary doc element from the DOM.
     doc.remove();
-
-    let len = countPlaceholders(doc.innerHTML);
-    out = evaluateTemplate(len, doc.innerHTML, true);
 
     // Returns the parsed HTML string.
     return [out, data];
@@ -308,7 +308,6 @@ const QueFlow = ((exports) => {
     if (app) {
       let result = jsxToHTML(jsx);
 
-      // Re-renders the element's content.
       prep = result[0];
       dataQF = [...dataQF, ...result[1]];
 
@@ -336,7 +335,7 @@ const QueFlow = ((exports) => {
       // Checks if the element has children.
       if (hasChildren(app)[0]) {
         let result = jsxToHTML(app.innerHTML);
-        // Re-renders the element's content.
+
         app.innerHTML = result[0];
         dataQF = [...dataQF, ...result[1]];
 
@@ -382,8 +381,7 @@ const QueFlow = ((exports) => {
       id = child.dataset.qfid;
 
     if (!isParent) {
-      // Pushes innertext attribute into 'attr'
-      attr.push({ attribute: "innerHTML", value: child.innerText });
+      attr.push({ attribute: "innerText", value: child.innerText });
     }
     for (let { attribute, value } of attr) {
 
@@ -404,9 +402,8 @@ const QueFlow = ((exports) => {
         }
       }
 
-
       if (hasTemplate) {
-        (child.style[attribute] || child.style[attribute] === "") ? arr.push({ template: value, key: "style." + attribute, qfid: id })  :  arr.push({ template: value, key: attribute, qfid: id });
+        (child.style[attribute] || child.style[attribute] === "") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
       }
 
 
@@ -418,20 +415,22 @@ const QueFlow = ((exports) => {
 
 
   function objToStyle(selector = "", obj = {}) {
-    let keys = Object.keys(obj), style ='', len = keys.length;
-    
+    let keys = Object.keys(obj),
+      style = '',
+      len = keys.length;
+
     for (let i = 0; i < len; i++) {
-      style+= "\n"+selector+" "+keys[i]+" {"+obj[keys[i]]+"}\n";
+      style += "\n" + selector + " " + keys[i] + " {" + obj[keys[i]] + "}\n";
     }
-    
+
     return style;
   }
 
   function initiateComponentStyle(selector = "", instance = Object) {
     let styles = objToStyle(selector, instance.stylesheet);
-   
-    (stylesheet.el).textContent+= styles;
-    
+
+    (stylesheet.el).textContent += styles;
+
     if (!stylesheet.isAppended) {
       document.head.appendChild(stylesheet.el);
     }
@@ -467,14 +466,16 @@ const QueFlow = ((exports) => {
 
       // Stores the component's stylesheet 
       this.stylesheet = options.stylesheet;
-      
+
       // Stores the component's reactive elements data
       this.dataQF = [];
-      
-      if(!this.element.id) throw new Error("To use component scoped stylesheets, component's element must have a valid id")
+
+      let id = this.element.id;
+      if (!id) throw new Error("To use component scoped stylesheets, component's element must have a valid id");
+
       // Initiates a component's stylesheet 
-      initiateComponentStyle(selector, this);
-      
+      initiateComponentStyle(`#${id}`, this);
+
       // Defines properties for the component instance.
       Object.defineProperties(this, {
         template: { value: this.options.template },
@@ -542,6 +543,13 @@ const QueFlow = ((exports) => {
   }
 
 
+  // Checks if a template placeholder contains a key
+  function needsUpdate(template, key) {
+    if (!template.includes("{{") || !template.includes("}}")) return false;
+
+    return (b(template).includes(key)) ? true : needsUpdate(template.replace("{{" + b(template) + "}}", b(template)), key);
+  }
+
   // Updates a component based on changes made to it's data
   function updateComponent(ckey, obj) {
     // Filters Null elements from the Component
@@ -553,11 +561,11 @@ const QueFlow = ((exports) => {
     for (let d of dataQF) {
       let { template, key, qfid } = d;
       let child = selectElement(qfid);
-      if (template.includes(ckey)) {
+      if (needsUpdate(template, ckey)) {
         let len = countPlaceholders(template);
 
-        evaluated = (key.includes("style.")) ? evaluateTemplate(len, template) : evaluateTemplate(len, template, true);
-        
+        evaluated = evaluateTemplate(len, template, obj);
+
         key = (key === "class") ? "className" : key;
         style(child, key, evaluated);
       }
@@ -571,7 +579,7 @@ const QueFlow = ((exports) => {
 
     for (i; i < len; i++) {
       let extracted = stringBetween(input, "{{", "}}");
-      input = input.replaceAll("{{" + extracted + "}}", sanitizeString(props[extracted]));
+      input = input.replaceAll("{{" + extracted + "}}", sanitizeString(props[extracted.trim()]));
     }
 
     return input;
@@ -583,9 +591,19 @@ const QueFlow = ((exports) => {
    * @param {String|Function} templateFunc    A function that returns string to make into a template
    */
   class Template {
-    constructor(el, templateFunc) {
-      this.element = el;
+    constructor(el, stylesheet, templateFunc) {
+      this.element = typeof el == "string" ? document.querySelector(el) : el;
+
       this.template = templateFunc;
+      this.stylesheet = stylesheet;
+
+      let id = this.element.id;
+
+      if (!id) throw new Error("To use template scoped stylesheets, template's element must have a valid id");
+
+      // Initiates a component's stylesheet 
+      initiateComponentStyle(`#${id}`, this);
+
     }
 
     renderWith(data, position = "append") {
@@ -593,12 +611,13 @@ const QueFlow = ((exports) => {
 
       let rendered = renderTemplate(template, data),
         r = jsxToHTML(rendered),
-        el = document.querySelector(this.element),
+        el = this.element,
         html = el.innerHTML;
 
       el.innerHTML = html + r[0];
     }
   }
+
 
   // Exports the public APIs of QueFlowJS.
   exports.Render = Render;
@@ -608,7 +627,9 @@ const QueFlow = ((exports) => {
   exports.Template = Template;
 
   // Define the exports as an ES Module
-  Object.defineProperty(exports, "__esModule", { value: true });
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 
   return exports;
 

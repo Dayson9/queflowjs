@@ -190,37 +190,36 @@ const QueFlow = ((exports) => {
 
 
   // Evaluates a template string by replacing placeholders with their values.
-function evaluateTemplate(len, reff, instance) {
-  let out = reff,
-    i = 0,
-    extracted = "",
-    parsed = "",
-    ext = "";
+  function evaluateTemplate(len, reff, instance) {
+    let out = reff,
+      i = 0,
+      extracted = "",
+      parsed = "",
+      ext = "";
 
-  const parseFunc = str => instance ? Function('return ' + ext).call(instance) : parsed = Function('"use-strict"; return ' + ext)();
+    const parseFunc = () => instance ? Function('return ' + ext).call(instance) : Function('"use-strict"; return ' + ext)();
 
-  try {
-    // Iterates through all placeholders in the template.
-    for (i = 0; i < len; i++) {
-      // Extracts the placeholder expression.
-      extracted = stringBetween(out, "{{", "}}");
-      //Sanitize extracted string
-      ext = sanitizeString(extracted);
-      // Parse extracted string
-      parsed = parseFunc(ext);
-      // Replace placeholder expression with evaluated value
-      out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+    try {
+      // Iterates through all placeholders in the template.
+      for (i = 0; i < len; i++) {
+        // Extracts the placeholder expression.
+        extracted = stringBetween(out, "{{", "}}");
+        //Sanitize extracted string
+        ext = sanitizeString(extracted);
+        // Parse extracted string
+        parsed = parseFunc();
+        // Replace placeholder expression with evaluated value
+        out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+      }
+    } catch (error) {
+      let reg = /Unexpected token/i;
+      if (!reg.test(error))
+        console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
     }
-  } catch (error) {
-    let reg = /Unexpected token/i;
-    if (!reg.test(error))
-      console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
+
+    // Returns the evaluated template string.
+    return out;
   }
-
-  // Returns the evaluated template string.
-  return out;
-}
-
 
 
 
@@ -275,14 +274,15 @@ function evaluateTemplate(len, reff, instance) {
 
     try {
       let targetElements = divLen > docLen ? div.querySelectorAll("*") : doc.querySelectorAll("*");
+      
       let ln = targetElements.length;
       // Iterates over target elements
       for (let i = 0; i < ln; i++) {
         let c = targetElements[i];
         if (!hasChildren(c)) {
-          data.push(...generateComponentData(c));
+          data.push(...generateComponentData(c, false, instance));
         } else {
-          data.push(...generateComponentData(c, true));
+          data.push(...generateComponentData(c, true, instance));
         }
       }
     } catch (error) {
@@ -375,7 +375,7 @@ function evaluateTemplate(len, reff, instance) {
   }
 
   // Generates and returns dataQF property based on 'child' parameter
-  function generateComponentData(child, isParent) {
+  function generateComponentData(child, isParent, instance) {
     let arr = [],
       attr = getAttributes(child),
       id = child.dataset.qfid;
@@ -395,7 +395,7 @@ function evaluateTemplate(len, reff, instance) {
       }
 
       if (child.style[attribute] || child.style[attribute] === "") {
-        child.style[attribute] = evaluateTemplate(len, value);
+        child.style[attribute] = evaluateTemplate(len, value, instance);
         if ((attribute.toLowerCase()) !== "src") {
           child.removeAttribute(attribute);
         }
@@ -448,14 +448,14 @@ function evaluateTemplate(len, reff, instance) {
       // Cache the attributes for faster access
       let attributes = getAttributes(c), atLen = attributes.length;
   
-      // Use a for loop instead of forEach for potential performance gain
+      // Loop through attributes
       for (let j = 0; j < atLen; j++) {
         const { attribute, value } = attributes[j];
   
         // Check if the attribute starts with "on" using string startsWith method
         if (attribute.startsWith("on")) {
           // Bind the function to the instance directly
-          c[attribute] = Function(value).bind(instance);
+          c[attribute] = Function("e", value).bind(instance);
         }
       }
     }

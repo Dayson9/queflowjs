@@ -12,8 +12,6 @@ const QueFlow = ((exports) => {
       isAppended: false
     };
 
-  _this = {};
-
   // Selects an element in the DOM using its data-qfid attribute.
   function selectElement(qfid) {
     return document.querySelector("[data-qfid=" + qfid + "]");
@@ -130,7 +128,6 @@ const QueFlow = ((exports) => {
             } else {
               // Update the target object accordingly
               target[key] = value;
-              _this = host;
               updateComponent(key, host);
             }
           }
@@ -161,8 +158,8 @@ const QueFlow = ((exports) => {
   // Checks if a DOM element has child elements.
   function hasChildren(element) {
     let children = element.querySelectorAll("*") || 0;
-    // Returns true if there are children and an array of child elements.
-    return children.length > 0 ? [true, children] : [false];
+    // Returns true if there are children otherwise false
+    return children.length > 0 ? true : false;
   }
 
 
@@ -193,42 +190,39 @@ const QueFlow = ((exports) => {
 
 
   // Evaluates a template string by replacing placeholders with their values.
-  function evaluateTemplate(len, reff, indicator, arr) {
-    let out = reff,
-      i = 0,
-      extracted = "",
-      parsed = "",
-      ext = "";
+  function evaluateTemplate(len, reff, instance) {
+  let out = reff,
+    i = 0,
+    extracted = "",
+    parsed = "",
+    ext = "";
 
-    try {
-      // If length of placeholder expressions are not zero
-      if (len) {
-        // Iterates through all placeholders in the template.
-        for (i = 0; i < len; i++) {
-          // Extracts the placeholder expression.
-          extracted = stringBetween(out, "{{", "}}");
-          //Sanitize extracted string
-          ext = sanitizeString(extracted);
-          // Parse extracted string
-          parsed = Function('"use-strict";' + ext)() || Function('"use-strict"; return ' + ext)();
-          // Replace placeholder expression with evaluated value
-          out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
-        }
+  try {
+    // Iterates through all placeholders in the template.
+    for (i = 0; i < len; i++) {
+      // Extracts the placeholder expression.
+      extracted = stringBetween(out, "{{", "}}");
+      //Sanitize extracted string
+      ext = sanitizeString(extracted);
+
+      if (instance) {
+        parsed = Function('return ' + ext).call(instance);
       } else {
-        // Else return it's parsed value
-        out = JSON.parse(out);
+        // Parse extracted string
+        parsed = Function('"use-strict"; return ' + ext)();
       }
-    } catch (error) {
-      let reg = /Unexpected token/i;
-      // Prevents some unnecessary errors from being thrown
-      if (!reg.test(error))
-        console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
+      // Replace placeholder expression with evaluated value
+      out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
     }
-
-
-    // Returns the evaluated template string.
-    return out;
+  } catch (error) {
+    let reg = /Unexpected token/i;
+    if (!reg.test(error))
+      console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
   }
+
+  // Returns the evaluated template string.
+  return out;
+}
 
 
 
@@ -261,42 +255,50 @@ const QueFlow = ((exports) => {
 
 
   // Converts JSX/HTML string into plain HTML, handling placeholders.
-  function jsxToHTML(jsx) {
+  function jsxToHTML(jsx, instance) {
     let parser = new DOMParser(),
       children = [],
       out = "",
       attributes = [],
       data = [];
+
     let d = parser.parseFromString(jsx, "text/html"),
-      doc = d.body;
+      doc = d.body,
+      html = doc.innerHTML;
+
+    let div = document.createElement("div"),
+      len = countPlaceholders(doc.innerHTML),
+      str = evaluateTemplate(len, doc.innerHTML, instance);
+
+    div.innerHTML = str;
+
+    let docLen = doc.querySelectorAll("*").length;
+    let divLen = div.querySelectorAll("*").length;
 
     try {
-      // Selects all child elements within the doc.
-      children = doc.querySelectorAll("*");
-
-      // Iterates through each child element.
-      for (let c of children) {
-        // Checks if the element has no children.
-        if (!hasChildren(c)[0]) {
-          data = [...data, ...generateComponentData(c)];
+      let targetElements = divLen > docLen ? div.querySelectorAll("*") : doc.querySelectorAll("*");
+      let ln = targetElements.length;
+      // Iterates over target elements
+      for (let i = 0; i < ln; i++) {
+        let c = targetElements[i];
+        if (!hasChildren(c)) {
+          data.push(...generateComponentData(c));
         } else {
-          data = [...data, ...generateComponentData(c, true)];
+          data.push(...generateComponentData(c, true));
         }
-      };
-
+      }
     } catch (error) {
-
-      console.error("An error occurred while processing JSX/HTML:\n\n" + error);
+      console.error("An error occurred while processing JSX/HTML:\n" + error);
     }
 
+    let finalElement = divLen > docLen ? div : doc;
+    let finalLen = countPlaceholders(finalElement.innerHTML);
+    out = evaluateTemplate(finalLen, finalElement.innerHTML, instance);
 
-    let len = countPlaceholders(doc.innerHTML);
-    out = evaluateTemplate(len, doc.innerHTML);
-
-    // Removes the temporary doc element from the DOM.
+    // Remove temporary elements
     doc.remove();
+    div.remove();
 
-    // Returns the parsed HTML string.
     return [out, data];
   }
 
@@ -333,7 +335,7 @@ const QueFlow = ((exports) => {
     // Checks if the selector is valid.
     if (app) {
       // Checks if the element has children.
-      if (hasChildren(app)[0]) {
+      if (hasChildren(app)) {
         let result = jsxToHTML(app.innerHTML);
 
         app.innerHTML = result[0];
@@ -396,7 +398,6 @@ const QueFlow = ((exports) => {
 
       if (child.style[attribute] || child.style[attribute] === "") {
         child.style[attribute] = evaluateTemplate(len, value);
-
         if ((attribute.toLowerCase()) !== "src") {
           child.removeAttribute(attribute);
         }
@@ -408,6 +409,7 @@ const QueFlow = ((exports) => {
 
 
     }
+
 
     // Returns arr 
     return arr;
@@ -436,6 +438,31 @@ const QueFlow = ((exports) => {
     }
   }
 
+
+  function handleEventListener(parent, instance) {
+    // Use a NodeList directly for faster iteration
+    const children = parent.querySelectorAll("*"), len = children.length;
+  
+    // Iterate through each child element
+    for (let i = 0; i < len; i++) {
+      let c = children[i];
+  
+      // Cache the attributes for faster access
+      let attributes = getAttributes(c), atLen = attributes.length;
+  
+      // Use a for loop instead of forEach for potential performance gain
+      for (let j = 0; j < atLen; j++) {
+        const { attribute, value } = attributes[j];
+  
+        // Check if the attribute starts with "on" using string startsWith method
+        if (attribute.startsWith("on")) {
+          // Bind the function to the instance directly
+          c[attribute] = Function(value).bind(instance);
+        }
+      }
+    }
+  }
+
   /**
    * Defines a QComponent class 'for creating and managing components.
    * @param {String|Node} element    The element to mount component into
@@ -444,8 +471,6 @@ const QueFlow = ((exports) => {
    */
   class QComponent {
     constructor(selector = "", options = {}) {
-      // Assigns the current instance to _this.
-      _this = this;
       // Stores the element associated with a component
       this.element = typeof selector == "string" ? document.querySelector(selector) : selector;
 
@@ -454,7 +479,7 @@ const QueFlow = ((exports) => {
       // Creates a reactive signal for the component's data.
       this.data = createSignal(options.data, { forComponent: true, host: this });
 
-      // Asigns the value of '_this.data' to _data
+      // Asigns the value of this.data' to _data
       let _data = this.data;
 
       // Stores the options provided to the component.
@@ -485,7 +510,7 @@ const QueFlow = ((exports) => {
             return _data;
           },
           set: (data) => {
-            // If 'data' is not same as '_this.data' and component is not frozem
+            // If 'data' is not same as 'this.data' and component is not frozem
             if (!isSame(data, this.data) && !this.isFrozen) {
               _data = createSignal(data, { forComponent: true, host: this });
               this.dataQF = filterNullElements(this.dataQF);
@@ -500,16 +525,15 @@ const QueFlow = ((exports) => {
     }
 
     render() {
-      _this = this;
       let el = this.element;
       // Checks if the component's template is a string or a function.
       let template = this.template instanceof Function ? this.template() : this.template;
 
-
-      let rendered = jsxToHTML(template);
+      let rendered = jsxToHTML(template, this);
 
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];
+      handleEventListener(el, this);
     }
 
     freeze() {
@@ -553,7 +577,6 @@ const QueFlow = ((exports) => {
   // Updates a component based on changes made to it's data
   function updateComponent(ckey, obj) {
     // Filters Null elements from the Component
-
     obj.dataQF = filterNullElements(obj.dataQF);
 
     let { dataQF } = obj;
@@ -565,7 +588,6 @@ const QueFlow = ((exports) => {
         let len = countPlaceholders(template);
 
         evaluated = evaluateTemplate(len, template, obj);
-
         key = (key === "class") ? "className" : key;
         style(child, key, evaluated);
       }

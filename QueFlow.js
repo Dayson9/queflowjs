@@ -190,12 +190,14 @@ const QueFlow = ((exports) => {
 
 
   // Evaluates a template string by replacing placeholders with their values.
-  function evaluateTemplate(len, reff, instance) {
+function evaluateTemplate(len, reff, instance) {
   let out = reff,
     i = 0,
     extracted = "",
     parsed = "",
     ext = "";
+
+  const parseFunc = str => instance ? Function('return ' + ext).call(instance) : parsed = Function('"use-strict"; return ' + ext)();
 
   try {
     // Iterates through all placeholders in the template.
@@ -204,13 +206,8 @@ const QueFlow = ((exports) => {
       extracted = stringBetween(out, "{{", "}}");
       //Sanitize extracted string
       ext = sanitizeString(extracted);
-
-      if (instance) {
-        parsed = Function('return ' + ext).call(instance);
-      } else {
-        // Parse extracted string
-        parsed = Function('"use-strict"; return ' + ext)();
-      }
+      // Parse extracted string
+      parsed = parseFunc(ext);
       // Replace placeholder expression with evaluated value
       out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
     }
@@ -223,6 +220,7 @@ const QueFlow = ((exports) => {
   // Returns the evaluated template string.
   return out;
 }
+
 
 
 

@@ -54,11 +54,11 @@ const calculator = new QComponent("#app", {
     return (
       `<h1 color='dodgerblue'>Simple Calculator App</h1>
     
-     <p class='out'>Output: {{ _this.data.out }}</p>
+     <p class='out'>Output: {{ this.data.out }}</p>
      
      <input type='text' value='20*20' id='out'>
     
-    <button onclick = "eval(out.value) ? calculator.data.out = eval(out.value) : ''  ">Evaluate</button>
+    <button onclick = "eval(out.value) ? this.data.out = eval(out.value) : ''  ">Evaluate</button>
     `
     )
   }

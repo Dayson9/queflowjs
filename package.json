@@ -1,0 +1,19 @@
+{
+  "name": "QueFlowJS Documentation",
+  "version": "1.0.0",
+  "description": "Documentation for QueFlowJS",
+  "main": "index.js",
+  "repository": "https://github.com/Dayson9/queflowjs",
+  "author": "(Dayson)",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

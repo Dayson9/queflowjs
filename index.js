@@ -1,34 +1,33 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const router = express.Router();
-
+const apis = require("./apis.js");
 
 const port = process.env.PORT || 3000;
 const key = process.env.key;
 
-app.listen(port);
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname+"/dist/landing_page.html");
+  res.sendFile(__dirname+"/docs/build/getting_started.html");
 });
 
 app.get('/getting-started', (req, res) => {
-  res.sendFile(__dirname+"/dist/getting_started.html");
+  res.sendFile(__dirname+"/docs/build/getting_started.html");
 });
 
 app.get('/about', (req, res) => {
-  res.sendFile(__dirname+"/dist/about.html");
+  res.sendFile(__dirname+"/docs/build/about.html");
 });
 
 app.get('/contact', (req, res) => {
-  res.sendFile(__dirname+"/dist/contact.html");
+  res.sendFile(__dirname+"/docs/build/contact.html");
 });
 
 app.get('/donate', (req, res) => {
-  res.sendFile(__dirname+"/dist/donate.html");
+  res.sendFile(__dirname+"/docs/build/donate.html");
 });
 
-app.use(express.static('dist'));
+app.use(express.static('docs/build'));
+app.use("/apis", apis);
 
-app.use(express.raw({ type: '*/*', limit: '1mb' }));
+app.listen(port);

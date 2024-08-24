@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QueflowJS | APIS</title>
+  <meta name="google-site-verification" content="inCPnY2h-YtTgpzPG8z9rgY4oz37HZEC6fxH3ab17mY" />
+
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="./styles/bulma.min.css">
+  <link rel="stylesheet" href="./styles/style.css">
+</head>
+
+<body>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="./images/queflow.png" alt="QueFlowJS Logo">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page" id="apis">
+    <div class="section">
+      <h1 class="heading">The API Reference</h1>
+      <p>QueFlow has just 3 core methods for managing and rendering reactive state UI.</p>
+      <ol class="blue">
+        <li onclick="toPage('/apis/render')">Render()</li>
+        <li onclick="toPage('/apis/irender')">iRender()</li>
+        <li onclick="toPage('apis/signal')">createSignal()</li>
+      </ol>
+    </div>
+  </div>
+
+<hr>
+
+<div class="footer">
+  <div class="col">
+    <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+    <span class="blue" onclick="toPage('/apis')">API Reference</span>
+    <span class="blue" onclick="toPage('/demos')">Demos</span>
+    <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+  </div>
+
+  <div class="stm">
+    <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+  </div>
+</div>
+
+<script src="./scripts/script.js"></script>
+</body>
+
+</html>

@@ -1,41 +1,6 @@
-var target, el = {};
+const h1 = document.querySelectorAll("h1");
 
-const pages = document.querySelectorAll(".page"), loader = document.querySelector("#loader"), h1 = document.querySelectorAll("h1");
-
-const toPage = (id, con) =>{
-let elem = document.getElementById(id), int = (Math.random()*1800)+10;
-
-elem.style.visibility = "hidden";
-elem.style.display = "none";
-
-loader.style.display = "block";
-loader.style.visibility = "visible";
-
-let a = document.createElement("a");
-a.href = "#nav";
-
-pages.forEach((page) =>{
-if(page.id != id){
-page.style.display = "none";
-}
-});
-
-a.click();
-
-if(con){
-el.classList.remove('is-active');
-target.classList.remove('is-active');
-}
-
-setTimeout(() => {
-loader.style.display = "none";
-elem.style.display = "block";
-elem.style.visibility = "visible";
-}, int);
-
-}
-
-
+const toPage = url => window.location.href = url;
 
 document.addEventListener('DOMContentLoaded', () => {
  

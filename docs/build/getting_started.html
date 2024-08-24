@@ -11,12 +11,91 @@
 
   <link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css" />
 
-  <link rel="stylesheet" href="bulma.min.css">
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./styles/bulma.min.css">
+  <link rel="stylesheet" href="./styles/style.css" />
 </head>
 
 <body>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="./images/queflow.png" alt="QueFlowJS Logo">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
 
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page" id="home">
+    <div class="section">
+      <h1 class="title" style="color: #158A81">QueFlow</h1>
+      <p class="subtitle">A JavaScript library for building reactive state UI 🌊</p>
+    </div>
+
+    <div class="section">
+      <h1>Getting Started</h1>
+      <p>Let's quickly see how we can get started with QueFlow</p>
+      <a href="#install">#Installation</a>
+      <a href="#qs">#Quick Start</a>
+    </div>
+    <div class="section" id="install">
+      <h1>Installation</h1>
+      <p>To install QueFlow, you either can use CDN, go to its <a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub repository</a> or <a href="https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@main/QueFlow.min.js" target="_blank">direct download</a>.</p><br>
+      <h1>Using CDN</h1>
+      <p>CDN is the fastest way to install a library. Just copy and paste the below code into the head section of your HTML file.</p><br>
+      <div class="code">
+        <pre>
+<span class="silver">&lt;</span><span class="pink">script </span><span class="green">src</span><span class="silver">&equals;"</span><span class="blue">https://cdn.jsdelivr.net/gh/Dayson9/QueFlowJS@main/QueFlow.min.js</span><span class="silver">"&gt;&lt;/</span><span class="pink">script</span><span class="silver">&gt;</span>
+</pre>
+      </div>
+    </div>
+
+    <div class="section" id="qs">
+      <h1 class="heading grotesk">Quick Start</h1>
+      <p>QueFlowJS is a lightweight library which has 3 core methods: <span class="green">iRender()</span>, <span class="green">Render()</span>, and <span class="green">createSignal()</span>.
+      </p><br>
+      <p>Create a reactive data with the <b class="green">createSignal()</b> method. The <span class="green">createSignal()</span> method only accepts one argument, which is the reactive data.</p><br>
+      <iframe height="300" style="width: 100%;" scrolling="no" title="Signal_1" src="https://codepen.io/Dayson9/embed/gOJmNRb?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+        See the Pen <a href="https://codepen.io/Dayson9/pen/gOJmNRb">
+          Signal_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe>
+      <br><br><br>
+      <p>Easily render UI using the <b class="green">Render()</b> method. This method accepts only two arguments, which is the HTML string to render and the element to render it on.</p><br>
+      <iframe height="300" style="width: 100%;" scrolling="no" title="Render_1" src="https://codepen.io/Dayson9/embed/pomNmeE?default-tab=js&theme-id=dark" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+        See the Pen <a href="https://codepen.io/Dayson9/pen/pomNmeE">
+          Render_1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe>
+    </div>
+  </div>
+
+  <hr>
+  <div class="footer">
+    <div class="col">
+      <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+      <span class="blue" onclick="toPage('/apis')">API Reference</span>
+      <span class="blue" onclick="toPage('/demos')">Demos</span>
+      <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+    </div>
+
+    <div class="stm">
+      <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+    </div>
+  </div>
+  <script src="./scripts/script.js"></script>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
-const express = require('express');
-const path = require('path');
-const apis = express.Router();
-const app = express();
+const express = require('express'),
+  path = require('path'),
+  apis = express.Router(),
+  app = express();
 
 const fetchFile = str => path.join(__dirname, '..', '/docs/build', str);
 

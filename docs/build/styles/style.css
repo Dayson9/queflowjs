@@ -2,140 +2,157 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Raleway');
 
-body{
-margin: 0;
-padding: 0;
+body {
+  margin: 0;
+  padding: 0;
 }
 
-html{
-scroll-behavior: smooth;
+html {
+  scroll-behavior: smooth;
 }
 
-*:not(.code){
-transition: .3s!important;
-font-family: "Raleway", sans-serif;
+*:not(.code, .code pre, .code span) {
+  transition: .3s !important;
+  font-family: "Raleway", sans-serif;
 }
 
-.grotesk-heading, .title{
-font-family: "Cabinet Grotesk Medium"!important;
-font-size: 25px;
-font-weight: 800;
+.grotesk-heading,
+.title {
+  font-family: "Cabinet Grotesk Medium" !important;
+  font-size: 25px;
+  font-weight: 800;
 }
 
-.page, #loader{
-width: 100vw;
-min-height: 130px;
-background: transparent;
+.page,
+#loader {
+  width: 100vw;
+  min-height: 130px;
+  background: transparent;
 }
 
-.small{
-font-size: 1.3rem;
+.page b {
+  font-size: 1.2em;
+  font-weight: 640;
 }
 
-.smaller{
-font-size: 0.9rem;
+.small {
+  font-size: 1.3rem;
 }
 
-ol{
-list-style-type: square;
-font-family: "Poppins";
-margin-left: 10%;
+.smaller {
+  font-size: 0.9rem;
 }
 
-ol li{
-margin-top: 10px;
+ol {
+  list-style-type: square;
+  font-family: "Poppins";
+  margin-left: 10%;
 }
 
-.blue{
-color: cornflowerblue;
+ol li {
+  margin-top: 10px;
 }
 
-.pink{
-color: #FD78E9;
+.blue {
+  color: cornflowerblue;
 }
 
-.silver{
-color: #B3B3B3;
+.pink {
+  color: #FD78E9;
 }
 
-.green{
-color: #158A81;
+.silver {
+  color: #6A6A6A;
 }
 
-.code{
-width: 90%;
-height: 65px;
-background: #EFEFEF;
-border-radius: 2px;
-display: flex;
-flex-direction: row;
-justify-content: center;
-font-family: "sans-serif"!important;
+.green {
+  color: #158A81;
 }
 
-.code pre{
-height: 100%;
-width: 100%;
-text-align: left;
+.code {
+  width: 82vw;
+  height: auto;
+  background: #EFEFEF;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
-p, span{
-font-family: "Poppins";
-font-size: 0.9em;
+.code pre {
+  width: 82vw!important;
+  text-align: left;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
-a{
-color: cornflowerblue;
+.code span {
+  font-family: monospace;
 }
 
-#logo{
-width: 45px;
-height: 45px;
+p,
+span {
+  font-family: "Poppins";
+  font-size: 0.9em;
+}
+
+a {
+  color: cornflowerblue;
+}
+
+#logo {
+  width: 45px;
+  height: 45px;
 }
 
 
-.heading{
-font-size: 1.7rem;
-font-weight: 600!important;
-font-family: "Cabinet Grotesk Medium"!important;
+.heading {
+  font-size: 1.7rem;
+  font-weight: 600 !important;
+  font-family: "Cabinet Grotesk Medium" !important;
 }
 
-.footer{
-background: transparent;
+.footer {
+  background: transparent;
 }
 
-.col{
-width: 100%;
-height: 60%;
-background: transparent;
+.col {
+  width: 100%;
+  height: 60%;
+  background: transparent;
 }
 
-.col span, col a{
-display: block;
-margin-bottom: 5px;
-text-decoration: none;
+.col span,
+col a {
+  display: block;
+  margin-bottom: 5px;
+  text-decoration: none;
 }
 
-.stm{
-width: 100%;
-height: 30%;
-transform: translateY(70px);
-text-align: center;
+.stm {
+  width: 100%;
+  height: 30%;
+  transform: translateY(70px);
+  text-align: center;
 }
 
 .tag {
   padding-inline: 6px;
   padding-block: 1px;
-  background: grey;
+  background: #092D2A;
   color: white;
 }
 
-@media (min-width: 768px){
-.message{
-width: 35%;
-}
+@media (min-width: 768px) {
+  .message {
+    width: 35%;
+  }
 
-.code{
-width: 40%;
-}
+  .code {
+    width: 40%;
+  }
+  
+  iframe {
+    width: 60vw;
+  }
 }

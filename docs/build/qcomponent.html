@@ -4,105 +4,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="/images/queflow.png"/>
-  <title></title>
+  <link rel="icon" href="/images/queflow.png" />
+  <title>QueFlowJS | QComponent</title>
+  <meta name="google-site-verification" content="inCPnY2h-YtTgpzPG8z9rgY4oz37HZEC6fxH3ab17mY" />
+
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="/styles/bulma.min.css">
+  <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body>
-<!-- The `QComponent` class in QueFlowJS allows you to create and manage reusable components with reactive data and dynamic rendering. This documentation will guide you through the process of creating and using QComponents effectively.
-
-<br>Creating a QComponent<br>
-
-To create a QComponent, you need to provide the following:
-
-1. <br>Selector:<br> A string or DOM element representing the target element where the component will be mounted.
-2. <br>Options:<br> An object containing the following properties:
-   * <br>`data`:<br>  An object or primitive value representing the initial data for your component.
-   * <br>`template`:<br>  A string or a function that returns a JSX/HTML string representing the component's structure and content.
-   * <br>`stylesheet`:<br> (optional)  An object containing CSS styles for component-specific styling.
-   * <br>`strict`:<br> (optional)  A boolean indicating whether to use `innerHTML` or `innerText` for non-parent elements. Defaults to `true`, using `innerText`.
-
-<br>Example:<br>
-
-```javascript
-import { QComponent } from "queflowjs";
-
-const myComponent = new QComponent("#myComponentContainer", {
-  data: {
-    name: "John Doe",
-    age: 30,
-  },
-  template: `
-    <div>
-      <h1>Hello, {{ name }}!</h1>
-      <p>You are {{ age }} years old.</p>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="/images/queflow.png" alt="QueFlowJS Logo">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
-  `,
-  stylesheet: {
-    "h1": {
-      "color": "blue",
-      "font-size": "2rem",
-    },
-    "p": {
-      "color": "red",
-    },
-  },
-});
-```
 
-<br>Rendering the Component<br>
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/advanced')">Advanced</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
 
-Once you create a QComponent instance, call the `render()` method to render its content into the target element:
 
-```javascript
-myComponent.render();
-```
+  <div class="page">
+    <div class="section">
+      <h1>The QComponent Class</h1><br>
+      <p>The QComponent class in QueFlowJS allows to create and manage reusable components with reactive data and dynamic rendering.</p><br>
+      <br>
+      <div class="code">
+        <pre>Syntax: <span class="blue">QComponent</span><span class="silver">( </span><span class="green">selector</span><span class="silver"> : string, {<br></span> <span class="green">stylesheet</span><span> : object, <br></span><span class="green">data</span><span> : any, <br></span><span class="green">template</span><span> : function | string, <br></span><span class="green">strict</span><span> : boolean <br>})</span></pre>
+      </div><br><br>
 
-<br>Reactive Data and Updates<br>
+      <b>Creating a Component</b>
+      <p>To create a QComponent, you need to provide the following:</p>
+      <ol class="smaller">
+        <li>Selector: A string or DOM element representing the target element where the component will be mounted.</li>
+        <li>Options: An object containing the following properties:</li>
+        <ol>
+          <li>data: An object or primitive value representing the initial data for your component.</li>
+          <li>template`: A string or a function that returns a JSX/HTML string representing the component's structure and content.</li>
+          <li>`stylesheet`: (optional) An object containing CSS styles for component-specific styling.</li>
+          <li>strict: (optional) A boolean indicating whether to use `innerHTML` or `innerText` for non-parent elements. Defaults to `true`, using `innerText`</li>
+        </ol>
+      </ol>
+      <br><br>
+      <p>Example:</p><br>
+      <iframe height="300" style="width: 100%;" scrolling="no" title="Untitled" src="https://codepen.io/Dayson9/embed/qBzKaOr?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+        See the Pen <a href="https://codepen.io/Dayson9/pen/qBzKaOr">
+          Untitled</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe><br><br><br>
+      <b>Reactive Data and Updates</b>
+      <p>The `data` property of a QComponent is a reactive signal. Any changes to the data will automatically trigger a re-render of the component, updating the DOM accordingly.</p><br>
+      <p>Example:</p><br>
+      <iframe height="300" style="width: 100%;" scrolling="no" title="QComponent2" src="https://codepen.io/Dayson9/embed/JjQZREN?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+        See the Pen <a href="https://codepen.io/Dayson9/pen/JjQZREN">
+          QComponent2</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe><br><br><br>
+      <b>Freezing and Unfreezing Components</b>
+      <p>You can prevent a component from further updates/re-rendering by using the freeze() method:</p>
+      <div class="code">
+        <pre>
+          <span class="silver">myComponent.</span><span class="green">freeze()</span><span class="silver">;</span>
+        </pre>
+      </div><br>
+      <p>To re-enable updates, use the `unfreeze()` method:</p>
+      <div class="code">
+        <pre>
+          <span class="silver">myComponent.</span><span class="green">unfreeze()</span><span class="silver">;</span>
+         </pre>
+      </div><br><br>
+      <b>Component Scoped Stylesheets</b>
+      <p>The stylesheet option in the `QComponent` constructor allows you to define component-specific styles. The styles will only apply to the component's element and its descendants.</p><br>
+      <!-- IFRAME -->
+      <div class="message is-info">
+        <div class="message-header">Note</div>
+        <div class="message-body smaller">
+          <p>For scoped styles to work, the target element of your component must have a valid `id` attribute.</p>
+        </div>
+      </div><br>
+    </div>
 
-The `data` property of a QComponent is a reactive signal. Any changes to the data will automatically trigger a re-render of the component, updating the DOM accordingly.
+  </div>
+  <!-- 
 
-<br>Example:<br>
+<br><br>
 
-```javascript
-// ... (previous code)
-
-// Update the component's data
-myComponent.data.name = "Jane Doe";
-myComponent.data.age = 35; 
-```
-
-<br>Freezing and Unfreezing Components<br>
-
-You can prevent further updates to a component's data by using the `freeze()` method:
-
-```javascript
-myComponent.freeze(); 
-```
-
-To re-enable updates, use the `unfreeze()` method:
-
-```javascript
-myComponent.unfreeze(); 
-```
-
-<br>Accessing and Modifying Data<br>
-
-You can access and modify the component's data using the `data` property:
-
-```javascript
-// Accessing data
-const name = myComponent.data.name; 
-
-// Modifying data
-myComponent.data.age = 40; 
-```
-
-<br>Component Scoped Stylesheets<br>
-
-The `stylesheet` option in the `QComponent` constructor allows you to define component-specific styles. The styles will only apply to the component's element and its descendants.
-
-<br>Note:<br> For scoped styles to work, the target element of your component must have a valid `id` attribute.
+<br>Note:<br>
 
 <br>Example:<br>
 
@@ -148,13 +152,14 @@ myComponent.data.age = 35;
 ```
 
 This example demonstrates how to create -->
+
   <hr>
 
   <div class="footer">
     <div class="col">
       <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
       <span class="blue" onclick="toPage('/apis')">API Reference</span>
-      <span class="blue" onclick="toPage('/advanced')">Advanced</span>      
+      <span class="blue" onclick="toPage('/advanced')">Advanced</span>
       <span class="blue" onclick="toPage('/demos')">Demos</span>
       <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
     </div>

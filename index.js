@@ -1,7 +1,8 @@
 const express = require('express'),
   path = require('path'),
   app = express(),
-  apis = require("./routes/apis.js");
+  apis = require("./routes/apis.js"),
+  advanced = require("./routes/advanced.js");
 
 const port = process.env.PORT || 3000;
 
@@ -19,6 +20,8 @@ app.get('/demos', (req, res) => {
 });
 
 app.use(express.static('docs/build'));
+
 app.use("/apis", apis);
+app.use("/advanced", advanced);
 
 app.listen(port);

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/images/queflow.png"/>
+  <title></title>
+</head>
+
+<body>
+<!-- The `QComponent` class in QueFlowJS allows you to create and manage reusable components with reactive data and dynamic rendering. This documentation will guide you through the process of creating and using QComponents effectively.
+
+<br>Creating a QComponent<br>
+
+To create a QComponent, you need to provide the following:
+
+1. <br>Selector:<br> A string or DOM element representing the target element where the component will be mounted.
+2. <br>Options:<br> An object containing the following properties:
+   * <br>`data`:<br>  An object or primitive value representing the initial data for your component.
+   * <br>`template`:<br>  A string or a function that returns a JSX/HTML string representing the component's structure and content.
+   * <br>`stylesheet`:<br> (optional)  An object containing CSS styles for component-specific styling.
+   * <br>`strict`:<br> (optional)  A boolean indicating whether to use `innerHTML` or `innerText` for non-parent elements. Defaults to `true`, using `innerText`.
+
+<br>Example:<br>
+
+```javascript
+import { QComponent } from "queflowjs";
+
+const myComponent = new QComponent("#myComponentContainer", {
+  data: {
+    name: "John Doe",
+    age: 30,
+  },
+  template: `
+    <div>
+      <h1>Hello, {{ name }}!</h1>
+      <p>You are {{ age }} years old.</p>
+    </div>
+  `,
+  stylesheet: {
+    "h1": {
+      "color": "blue",
+      "font-size": "2rem",
+    },
+    "p": {
+      "color": "red",
+    },
+  },
+});
+```
+
+<br>Rendering the Component<br>
+
+Once you create a QComponent instance, call the `render()` method to render its content into the target element:
+
+```javascript
+myComponent.render();
+```
+
+<br>Reactive Data and Updates<br>
+
+The `data` property of a QComponent is a reactive signal. Any changes to the data will automatically trigger a re-render of the component, updating the DOM accordingly.
+
+<br>Example:<br>
+
+```javascript
+// ... (previous code)
+
+// Update the component's data
+myComponent.data.name = "Jane Doe";
+myComponent.data.age = 35; 
+```
+
+<br>Freezing and Unfreezing Components<br>
+
+You can prevent further updates to a component's data by using the `freeze()` method:
+
+```javascript
+myComponent.freeze(); 
+```
+
+To re-enable updates, use the `unfreeze()` method:
+
+```javascript
+myComponent.unfreeze(); 
+```
+
+<br>Accessing and Modifying Data<br>
+
+You can access and modify the component's data using the `data` property:
+
+```javascript
+// Accessing data
+const name = myComponent.data.name; 
+
+// Modifying data
+myComponent.data.age = 40; 
+```
+
+<br>Component Scoped Stylesheets<br>
+
+The `stylesheet` option in the `QComponent` constructor allows you to define component-specific styles. The styles will only apply to the component's element and its descendants.
+
+<br>Note:<br> For scoped styles to work, the target element of your component must have a valid `id` attribute.
+
+<br>Example:<br>
+
+```html
+<div id="myComponentContainer">
+  </div>
+```
+
+<br>Complete Example:<br>
+
+```javascript
+import { QComponent } from "queflowjs";
+
+// Create a component instance
+const myComponent = new QComponent("#myComponentContainer", {
+  data: {
+    name: "John Doe",
+    age: 30,
+  },
+  template: `
+    <div>
+      <h1>Hello, {{ name }}!</h1>
+      <p>You are {{ age }} years old.</p>
+    </div>
+  `,
+  stylesheet: {
+    "h1": {
+      "color": "blue",
+      "font-size": "2rem",
+    },
+    "p": {
+      "color": "red",
+    },
+  },
+});
+
+// Render the component
+myComponent.render();
+
+// Update the component's data
+myComponent.data.name = "Jane Doe";
+myComponent.data.age = 35; 
+```
+
+This example demonstrates how to create -->
+  <hr>
+
+  <div class="footer">
+    <div class="col">
+      <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+      <span class="blue" onclick="toPage('/apis')">API Reference</span>
+      <span class="blue" onclick="toPage('/advanced')">Advanced</span>      
+      <span class="blue" onclick="toPage('/demos')">Demos</span>
+      <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+    </div>
+
+    <div class="stm">
+      <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+    </div>
+  </div>
+  <script src="/scripts/script.js"></script>
+</body>
+
+</html>

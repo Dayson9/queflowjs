@@ -123,6 +123,13 @@ transform: translateY(70px);
 text-align: center;
 }
 
+.tag {
+  padding-inline: 6px;
+  padding-block: 1px;
+  background: grey;
+  color: white;
+}
+
 @media (min-width: 768px){
 .message{
 width: 35%;

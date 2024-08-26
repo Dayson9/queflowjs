@@ -45,20 +45,27 @@
       <h1>The Template Class</h1><br>
       <p>The `Template` class in QueFlowJS provides a way to create and manage reusable templates for your web application. This class simplifies the process of dynamically rendering HTML content based on provided data.</p><br>
       <div class="code">
-        <pre>Syntax: <span class="blue">Template</span><span>(</span><br><span class="green">selector</span><span> : string | node,<br></span> <span class="green">stylesheet</span><span> : object, <br></span><span class="green">template</span><span> : function | string)</span></pre>
+        <pre>Syntax: <span class="blue">Template</span><span>(</span><br><span class="green">selector</span><span> : string | node,<br></span> <span class="green">stylesheet</span><span> : object, <br></span><span class="green">templateFunc</span><span> : function | string)</span></pre>
       </div><br><br>
+      <b>Creating a Template</b>
+      <p>To create a `Template` instance, you need to provide the following:</p>
+      <ol class="smaller">
+        <li>selector: A string selector or a DOM element representing the target where the template will be rendered.</li>
+        <li>stylesheet: An object containing CSS styles that will be scoped to the template's element.</li>
+        <li>templateFunc: A function that returns the HTML string for the template. This function can optionally accept data as an argument to dynamically generate the HTML.</li>
+      </ol>
     </div>
   </div>
 
 
   <!-- 
-### Creating a Template
+### 
 
-To create a `Template` instance, you need to provide the following:
 
-* <br>`el`:<br> A string selector or a DOM element representing the target where the template will be rendered.
-* <br>`stylesheet`:<br> An object containing CSS styles that will be scoped to the template's element.
-* <br>`templateFunc`:<br> A function that returns the HTML string for the template. This function can optionally accept data as an argument to dynamically generate the HTML.
+
+* <br>
+* <br>
+* <br>
 
 ```javascript
 // Example template with a simple greeting

@@ -92,45 +92,6 @@
   </div>
 
 
-  <!-- 
-
-```javascript
-
-```
-
-This will render the template with the title "My List" and a list containing the specified items.
-
-### Example
-
-Here's a complete example demonstrating the use of the `Template` class:
-
-```javascript
-// Import QueFlowJS
-import * as QueFlowJS from "./queflowjs.js";
-
-// Create a Template instance
-const myTemplate = new QueFlowJS.Template("#templateContainer", {
-  // Optional stylesheet
-  stylesheet: {
-    ".greeting": {
-      "color": "blue",
-      "font-size": "24px"
-    }
-  }
-}, (data) => {
-  return `<div class="greeting">Hello, ${data.name}!</div>`;
-});
-
-// Render the template with data
-myTemplate.renderWith({ name: "John Doe" });
-```
-
-This code will create a `Template` instance, render it with data, and insert the resulting HTML into an element with the ID "templateContainer".
-
-### Summary
-
-  -->
-
   <hr>
 
   <div class="footer">

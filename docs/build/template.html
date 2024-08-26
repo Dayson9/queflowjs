@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Template | QueFlowJS</title>
+  <meta name="google-site-verification" content="inCPnY2h-YtTgpzPG8z9rgY4oz37HZEC6fxH3ab17mY" />
+
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="/styles/bulma.min.css">
+  <link rel="stylesheet" href="/styles/style.css">
+</head>
+
+<body>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="/images/queflow.png" alt="QueFlowJS Logo">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/advanced')">Advanced</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
+
+<!-- 
+## QueFlowJS Template Class Documentation
+
+The `Template` class in QueFlowJS provides a way to create and manage reusable templates for your web application. This class simplifies the process of dynamically rendering HTML content based on provided data.
+
+### Creating a Template
+
+To create a `Template` instance, you need to provide the following:
+
+* <br>`el`:<br> A string selector or a DOM element representing the target where the template will be rendered.
+* <br>`stylesheet`:<br> An object containing CSS styles that will be scoped to the template's element.
+* <br>`templateFunc`:<br> A function that returns the HTML string for the template. This function can optionally accept data as an argument to dynamically generate the HTML.
+
+```javascript
+// Example template with a simple greeting
+const myTemplate = new QueFlowJS.Template("#templateContainer", {
+  // Optional stylesheet for the template element
+  stylesheet: {
+    ".greeting": {
+      "color": "blue",
+      "font-size": "24px"
+    }
+  }
+}, (data) => {
+  // Returns the HTML string for the template
+  return `<div class="greeting">Hello, ${data.name}!</div>`;
+});
+```
+
+### Rendering the Template
+
+Once the `Template` instance is created, you can render it using the `renderWith()` method. This method takes the following arguments:
+
+* <br>`data`:<br> An object containing the data to be used for template rendering.
+* <br>`position`:<br> (Optional) A string specifying the rendering position ("append" - default, "prepend").
+
+```javascript
+// Render the template with data
+myTemplate.renderWith({ name: "John Doe" });
+```
+
+This will insert the rendered HTML (`<div class="greeting">Hello, John Doe!</div>`) into the target element specified by the `el` parameter during initialization (in this case, an element with the ID "templateContainer").
+
+### Using Data in Templates
+
+The `templateFunc` can optionally accept data as an argument to dynamically generate the HTML. This data can be used within the HTML string returned by the function using string interpolation or other techniques.
+
+```javascript
+// Template with dynamically generated content
+const myTemplate = new QueFlowJS.Template("#templateContainer", {}, (data) => {
+  return `
+    <h1>${data.title}</h1>
+    <ul>
+      ${data.items.map(item => `<li>${item}</li>`).join('')}
+    </ul>
+  `;
+});
+
+// Render the template with some data
+myTemplate.renderWith({
+  title: "My List",
+  items: ["Item 1", "Item 2", "Item 3"]
+});
+```
+
+This will render the template with the title "My List" and a list containing the specified items.
+
+### Example
+
+Here's a complete example demonstrating the use of the `Template` class:
+
+```javascript
+// Import QueFlowJS
+import * as QueFlowJS from "./queflowjs.js";
+
+// Create a Template instance
+const myTemplate = new QueFlowJS.Template("#templateContainer", {
+  // Optional stylesheet
+  stylesheet: {
+    ".greeting": {
+      "color": "blue",
+      "font-size": "24px"
+    }
+  }
+}, (data) => {
+  return `<div class="greeting">Hello, ${data.name}!</div>`;
+});
+
+// Render the template with data
+myTemplate.renderWith({ name: "John Doe" });
+```
+
+This code will create a `Template` instance, render it with data, and insert the resulting HTML into an element with the ID "templateContainer".
+
+### Summary
+
+The `Template` class in QueFlowJS provides a powerful tool for creating and managing reusable templates within your web application. It allows you to easily render dynamic content based on data and apply styles scoped to the template element.  -->
+
+  <hr>
+
+  <div class="footer">
+    <div class="col">
+      <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+      <span class="blue" onclick="toPage('/apis')">API Reference</span>
+      <span class="blue" onclick="toPage('/advanced')">Advanced</span>      
+      <span class="blue" onclick="toPage('/demos')">Demos</span>
+      <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+    </div>
+
+    <div class="stm">
+      <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+    </div>
+  </div>
+  <script src="/scripts/script.js"></script>
+</body>
+
+</html>

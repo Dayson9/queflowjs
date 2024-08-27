@@ -17,6 +17,10 @@ advanced.get("/template", (req, res) => {
   res.sendFile(fetchFile("template.html"));
 });
 
+advanced.get("/direct-css", (req, res) => {
+  res.sendFile(fetchFile("direct_css.html"));
+});
+
 app.use(express.static('docs/build'));
 
 module.exports = advanced;

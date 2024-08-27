@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+
+
+<!--
+
+## Using Direct CSS Properties in QueFlowJS
+
+QueFlowJS allows you to directly apply CSS properties to your HTML elements within your template strings using the standard HTML attribute syntax. This provides a convenient way to style elements without requiring a separate stylesheet.
+
+Here's a breakdown of how to use direct CSS properties in QueFlowJS:
+
+<br>1. Direct CSS Property Syntax:<br>
+
+- Use standard HTML attribute syntax for applying CSS properties directly to your elements.
+- The attribute name should be the same as the CSS property name (e.g., `color`, `background-color`, `font-size`, etc.).
+- The attribute value should be the desired CSS value (e.g., `red`, `#f0f0f0`, `16px`, etc.).
+
+<br>Example:<br>
+
+```html
+<div color="red" background="orange" font-size="20px">Hello World</div>
+```
+
+This will render a red `<div>` element with an orange background and a font size of 20px.
+
+  <br>2. Rendering the Template:<br>
+
+  - Use the `Render` function to render your template string into the desired DOM element.
+
+  <br>Example:<br>
+
+  ```javascript
+  import { Render } from 'queflowjs';
+
+  const template = `<div color="red" background="orange" font-size="20px">Hello World</div>`;
+
+  Render(template, "#myContainer"); // Render the template into the element with id "myContainer"
+  ```
+
+  <br>3. Dynamic CSS Properties:<br>
+
+  - Use QueFlowJS's reactive signals to dynamically update CSS properties.
+  - Surround the CSS value with double curly braces `{{ }}` to indicate a placeholder for a reactive signal value.
+
+  <br>Example:<br>
+
+  ```javascript
+  import { Render, createSignal } from 'queflowjs';
+
+  const color = createSignal('blue'); // Create a reactive signal for the color
+  const template = `<div color="{{color}}" background="lightgray">Hello World</div>`;
+
+  Render(template, "#myContainer");
+
+  color.value = 'green'; // Update the color signal, which will trigger the template re-render
+
+  ```
+
+  <br>Key Points:<br>
+
+  - <br>Strict Mode:<br> By default, QueFlowJS operates in strict mode. In strict mode, only standard HTML attributes are allowed, so use valid CSS property names (e.g., `background-color` instead of `background`).
+  - <br>Dynamic Properties:<br> Direct CSS properties can be combined with dynamic properties using reactive signals for a powerful styling approach.
+  - <br>Prioritize CSS:<br> For more complex styles or larger projects, it's still recommended to use separate CSS files for better organization and maintainability. Direct CSS properties are most useful for simple, inline styling needs.
+
+  <br>Remember:<br>
+
+  - Use a CSS validator to ensure that the CSS property names and values you use are valid.
+  - Direct CSS properties are applied in-line, so they can override styles defined in external CSS files.
+
+  By leveraging QueFlowJS's direct CSS property support, you can easily style your HTML elements within your templates and create visually appealing web interfaces.
+
+-->
+</body>
+
+</html>

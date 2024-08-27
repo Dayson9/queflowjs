@@ -39,74 +39,44 @@
     </div>
   </nav>
 
-<div class="page">
-  <div class="section">
-    <h1>Using Direct CSS Properties</h1><br>
-    <p>QueFlowJS allows you to directly apply CSS properties to your HTML elements within your template strings using the standard HTML attribute syntax. This provides a convenient way to style elements without requiring a separate stylesheet.</p>
-    <p>Here's a breakdown of how to use direct CSS properties in QueFlowJS:</p>
-    <ol class="smaller">
-      <li>Use standard HTML attribute syntax for applying CSS properties directly to your elements.</li>
-      <li>The attribute name should be the same as the CSS property name (e.g., `color`, `background-color`, `font-size`, etc.).</li>
-      <li>The attribute value should be the desired CSS value (e.g., `red`, `#f0f0f0`, `16px`, etc.).</li>
-    </ol><br>
-    <p>Example:</p>
-    <iframe height="300" style="width: 100%;" scrolling="no" title="Direct_CSS1" src="https://codepen.io/Dayson9/embed/GRbGVgy?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-      See the Pen <a href="https://codepen.io/Dayson9/pen/GRbGVgy">
-        Direct_CSS1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
-      on <a href="https://codepen.io">CodePen</a>.
-    </iframe><br><br>
-    <p>As you can see from the above example, a div element with color red, an orange background and a font size of 20px.</p><br><br>
-    <b>Dynamic CSS Properties</b>
-    <p>With QueFlow, you can also embed dynamic CSS properties into elements</p>
+  <div class="page">
+    <div class="section">
+      <h1>Using Direct CSS Properties</h1><br>
+      <p>QueFlowJS allows you to directly apply CSS properties to your HTML elements within your template strings using the standard HTML attribute syntax. This provides a convenient way to style elements without requiring a separate stylesheet.</p>
+      <p>Here's a breakdown of how to use direct CSS properties in QueFlowJS:</p>
+      <ol class="smaller">
+        <li>Use standard HTML attribute syntax for applying CSS properties directly to your elements.</li>
+        <li>The attribute name should be the same as the CSS property name (e.g., `color`, `background-color`, `font-size`, etc.).</li>
+        <li>The attribute value should be the desired CSS value (e.g., `red`, `#f0f0f0`, `16px`, etc.).</li>
+      </ol><br>
+      <p>Example:</p><br>
+      <iframe height="300" style="width: 100%;" scrolling="no" title="Direct_CSS1" src="https://codepen.io/Dayson9/embed/GRbGVgy?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+        See the Pen <a href="https://codepen.io/Dayson9/pen/GRbGVgy">
+          Direct_CSS1</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe><br><br>
+      <p>As you can see from the above example, 3 paragraph elements with their respective color and background</p><br><br>
+      <b>Dynamic CSS Properties</b>
+      <p>Let's say you're building a UI where an element's CSS property needs to be changed, you should consider the below example: 👇</p><br>
+      <!-- EMBED -->
+
+      <p>Here are some key points to consider when using direct CSS properties</p>
+      <ol class="smaller">
+        <li>Dynamic Properties: Direct CSS properties can be combined with dynamic properties using reactive signals for a powerful styling approach.</li>
+        <li>Prioritize CSS: For more complex styles or larger projects, it's still recommended to use separate CSS files or Component scoped stylesheets (if you're working with a Component) for better organization and maintainability. Direct CSS properties are most useful for simple, inline styling needs.</li>
+      </ol><br>
+      <div class="message is-info">
+        <div class="message-header">Note</div>
+        <div class="message-body smaller">
+          <p></p>
+        </div>
+      </div><br>
+    </div>
   </div>
-</div>
 
-<!--
-
-<br>Example:<br>
-
-```html
-
-```
-
-  <br>2. Rendering the Template:<br>
-
-  - Use the `Render` function to render your template string into the desired DOM element.
-
-  <br>Example:<br>
-
-  ```javascript
-  import { Render } from 'queflowjs';
-
-  const template = `<div color="red" background="orange" font-size="20px">Hello World</div>`;
-
-  Render(template, "#myContainer"); // Render the template into the element with id "myContainer"
-  ```
-
-  <br>3. :<br>
-
-  - Use QueFlowJS's reactive signals to dynamically update CSS properties.
-  - Surround the CSS value with double curly braces `{{ }}` to indicate a placeholder for a reactive signal value.
-
-  <br>Example:<br>
-
-  ```javascript
-  import { Render, createSignal } from 'queflowjs';
-
-  const color = createSignal('blue'); // Create a reactive signal for the color
-  const template = `<div color="{{color}}" background="lightgray">Hello World</div>`;
-
-  Render(template, "#myContainer");
-
-  color.value = 'green'; // Update the color signal, which will trigger the template re-render
-
-  ```
-
-  <br>Key Points:<br>
-
-  - <br>Strict Mode:<br> By default, QueFlowJS operates in strict mode. In strict mode, only standard HTML attributes are allowed, so use valid CSS property names (e.g., `background-color` instead of `background`).
-  - <br>Dynamic Properties:<br> Direct CSS properties can be combined with dynamic properties using reactive signals for a powerful styling approach.
-  - <br>Prioritize CSS:<br> For more complex styles or larger projects, it's still recommended to use separate CSS files for better organization and maintainability. Direct CSS properties are most useful for simple, inline styling needs.
+  <!--
+  - <br>
+  - <br>
 
   <br>Remember:<br>
 
@@ -124,7 +94,7 @@
     <div class="col">
       <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
       <span class="blue" onclick="toPage('/apis')">API Reference</span>
-      <span class="blue" onclick="toPage('/advanced')">Advanced</span>      
+      <span class="blue" onclick="toPage('/advanced')">Advanced</span>
       <span class="blue" onclick="toPage('/demos')">Demos</span>
       <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
     </div>

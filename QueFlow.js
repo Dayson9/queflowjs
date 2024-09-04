@@ -412,20 +412,20 @@ const QueFlow = ((exports) => {
   }
 
 
-  function objToStyle(selector = "", obj = {}) {
-    let keys = Object.keys(obj),
-      style = '',
-      len = keys.length;
+function objToStyle(selector = "", obj = {}, alt = "") {
+    let style = "";
   
-    for (let i = 0; i < len; i++) {
-      let sel = (keys[i].indexOf("@media") != -1) ? selector : "";
+    for (const key in obj) {
+      const value = obj[key];
   
-      if (typeof obj[keys[i]] == "string") {
-        style += `\n${sel} ${keys[i]} {\n ${obj[keys[i]]}\n}\n`;
+      if (typeof value === 'string') {
+        let sel = alt.includes('@media') ? selector : '';
+        style += `\n${sel} ${key} {\n${value}\n}`;
       } else {
-        style += `\n${keys[i]} { ${objToStyle(sel, obj[keys[i]])} }\n`;
+        style += `\n${key} {\n${objToStyle(selector, value, key)}\n}`;
       }
     }
+  
     return style;
   }
 

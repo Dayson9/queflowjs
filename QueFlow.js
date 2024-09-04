@@ -274,7 +274,7 @@ const QueFlow = ((exports) => {
 
     try {
       let targetElements = divLen > docLen ? div.querySelectorAll("*") : doc.querySelectorAll("*");
-      
+
       let ln = targetElements.length;
       // Iterates over target elements
       for (let i = 0; i < ln; i++) {
@@ -412,20 +412,20 @@ const QueFlow = ((exports) => {
   }
 
 
-function objToStyle(selector = "", obj = {}, alt = "") {
+  function objToStyle(selector = "", obj = {}, alt = "") {
     let style = "";
-  
+    const compare = !alt.includes("@keyframes") && !alt.includes("@font-face");
     for (const key in obj) {
       const value = obj[key];
-  
+
       if (typeof value === 'string') {
-        let sel = alt.includes('@media') ? selector : '';
-        style += `\n${sel} ${key} {\n${value}\n}`;
+        let sel = typeof value == "string" || alt.includes('@media') ? selector : '';
+        style += `\n${ compare ? sel : ""} ${key} {\n${value}\n}`;
       } else {
         style += `\n${key} {\n${objToStyle(selector, value, key)}\n}`;
       }
     }
-  
+
     return style;
   }
 
@@ -442,19 +442,21 @@ function objToStyle(selector = "", obj = {}, alt = "") {
 
   function handleEventListener(parent, instance) {
     // Use a NodeList directly for faster iteration
-    const children = parent.querySelectorAll("*"), len = children.length;
-  
+    const children = parent.querySelectorAll("*"),
+      len = children.length;
+
     // Iterate through each child element
     for (let i = 0; i < len; i++) {
       let c = children[i];
-  
+
       // Cache the attributes for faster access
-      let attributes = getAttributes(c), atLen = attributes.length;
-  
+      let attributes = getAttributes(c),
+        atLen = attributes.length;
+
       // Loop through attributes
       for (let j = 0; j < atLen; j++) {
         const { attribute, value } = attributes[j];
-  
+
         // Check if the attribute starts with "on" using string startsWith method
         if (attribute.startsWith("on")) {
           // Bind the function to the instance directly

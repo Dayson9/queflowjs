@@ -407,8 +407,6 @@ const QueFlow = ((exports) => {
 
 
     }
-
-
     // Returns arr 
     return arr;
   }
@@ -418,11 +416,16 @@ const QueFlow = ((exports) => {
     let keys = Object.keys(obj),
       style = '',
       len = keys.length;
-
+  
     for (let i = 0; i < len; i++) {
-      style += "\n" + selector + " " + keys[i] + " {" + obj[keys[i]] + "}\n";
+      let sel = (keys[i].indexOf("@media") != -1) ? selector : "";
+  
+      if (typeof obj[keys[i]] == "string") {
+        style += `\n${sel} ${keys[i]} {\n ${obj[keys[i]]}\n}\n`;
+      } else {
+        style += `\n${keys[i]} { ${objToStyle(sel, obj[keys[i]])} }\n`;
+      }
     }
-
     return style;
   }
 

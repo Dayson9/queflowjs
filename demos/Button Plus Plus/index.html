@@ -9,6 +9,8 @@
   button {
     width: 100px;
     height: 35px;
+    border-radius: 5px;
+    color: white;
   }
   </style>
 </head>
@@ -16,7 +18,7 @@
 <body>
   <div id="app">
     <h1 color="indigo">Clicked {{counter.value}} {{counter.value > 1 ? 'times' : 'time'}}</h1>
-    <button id="btn" background-color = "darkorchid" color = "white" border = "none" onclick="counter.value++">Click Me!</button>
+    <button id="btn" background-color = "darkorchid" border = "none" onclick="counter.value++">Click Me!</button>
   </div>
 
   <script src="/lib/queflow.js"></script>

@@ -2,7 +2,7 @@
 const { iRender, createSignal } = QueFlow;
 
 // Create a reactive data
-const data = createSignal({text: "", color: "teal"});
+const data = createSignal({ text: "", color: "teal" });
 
 
 // Render app

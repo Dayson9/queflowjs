@@ -5,20 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Change its color : QueFlowJS</title>
-<script src="/lib/queflow.js"></script>
+  <script src="/lib/queflow.js"></script>
 </head>
 
 <body>
   <div id="app"></div>
   <script>
-   // Destructuring assignment
-const { Render, createSignal } = QueFlow;
+    // Destructuring assignment
+    const { Render, createSignal } = QueFlow;
 
-// Create a Signal to store the color value
-const data = createSignal({color: "darkorchid"});
+    // Create a Signal to store the color value
+    const data = createSignal({ color: "darkorchid" });
 
-// Render the color changer UI
-Render("<h1 color ='{{data.color}}' transition = '.5s'>Color</h1>\n<input type='text' oninput='data.color = this.value' placeholder='Enter color value'>\n", "#app"); 
+    // Render the color changer UI
+    Render("<h1 color ='{{data.color}}' transition = '.5s'>Color</h1>\n<input type='text' oninput='data.color = this.value' placeholder='Enter color value'>\n", "#app");
   </script>
 </body>
 

@@ -415,7 +415,7 @@ const QueFlow = ((exports) => {
       }
 
       if (hasTemplate) {
-        ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+        ((child.style[attribute] || child.style[attribute] === "") && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
       }
     }
     // Returns arr 
@@ -584,7 +584,7 @@ const QueFlow = ((exports) => {
     } else {
       if (evaluated !== child[key]) {
         if (isNotEvent(key)) {
-          child.setAttribute(key, evaluated);
+          child[key] = evaluated;
         } else {
           child.addEventListener(key.slice(2), evaluated);
         }

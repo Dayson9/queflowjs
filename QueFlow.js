@@ -2,7 +2,7 @@
 
 const QueFlow = ((exports) => {
   'use-strict';
-  // Stores data for all elements that are not in components.
+  // Stores data for all elements that are not in components/templates.
   var dataQF = [],
     // Counter for generating unique IDs for elements with reactive data.
     counterQF = 0,
@@ -13,9 +13,7 @@ const QueFlow = ((exports) => {
     };
 
   // Selects an element in the DOM using its data-qfid attribute.
-  function selectElement(qfid) {
-    return document.querySelector("[data-qfid=" + qfid + "]");
-  }
+  const selectElement = qfid => document.querySelector("[data-qfid=" + qfid + "]");
 
   // Counts the number of placeholders ({{...}}) in a given template string.
   function countPlaceholders(temp) {
@@ -38,9 +36,20 @@ const QueFlow = ((exports) => {
   // Checks if a string is not an event handler (e.g., "onclick").
   function isNotEvent(str) {
     // Regex to match strings starting with "on".
-    let reg = /^[on]{1}.{1,}$/;
+    let reg = /^on{1}[a-z]{1,}$/;
     // Returns true if the string does not match the regex, indicating it's not an event handler.
     return !reg.test(str);
+  }
+
+  function qfEvent(name) {
+    return new CustomEvent(name, {
+      detail: {
+        key: "",
+        value: ""
+      },
+    });
+
+
   }
 
   // Determines if a template needs to be updated based on a given key.
@@ -60,15 +69,13 @@ const QueFlow = ((exports) => {
 
   // Filters out null elements from the given input [Array].
   function filterNullElements(input) {
-    let data = input.filter((d) => {
+    return input.filter((d) => {
       let el = selectElement(d.qfid);
-      // If element exists, return its array (d).
+      // If element exists, return its the corresponding array (d).
       if (el) {
         return d;
       }
     });
-
-    return data;
   }
 
   // Updates the DOM based on changes to data in the reactive signals.
@@ -99,7 +106,7 @@ const QueFlow = ((exports) => {
       let v = shouldUpdate(pieces.template, key, len);
 
       if (v[0]) {
-        style(el, pieces.key, v[1]);
+        update(el, pieces.key, v[1]);
       }
     }
   }
@@ -120,7 +127,6 @@ const QueFlow = ((exports) => {
 
         set: (target, key, value) => {
           key = (parseInt(key)) ? parseInt(key) : key;
-
           if (!host.isFrozen) {
             if (key > host.data.length - 1) {
               target[key] = value; // Update the target object accordingly
@@ -131,6 +137,9 @@ const QueFlow = ((exports) => {
               updateComponent(key, host);
             }
           }
+          host.renderEvent.key = key;
+          host.renderEvent.value = value;
+          host.element.dispatchEvent(host.renderEvent);
           return true;
         }
       };
@@ -181,9 +190,8 @@ const QueFlow = ((exports) => {
     str = new String(str);
 
     for (let { from, to } of excluded_chars) {
-      str = str.replace(from, to);
+      str = str.replaceAll(from, to);
     }
-
 
     return str.replace(/javascript:/gi, '');
   }
@@ -197,21 +205,22 @@ const QueFlow = ((exports) => {
       parsed = "",
       ext = "";
 
-    const parseFunc = () => instance ? Function('return ' + ext).call(instance) : Function('"use-strict"; return ' + ext)();
+    const parse = () => instance ? Function('return ' + ext).call(instance) : Function('"use-strict"; return ' + ext)();
 
     try {
       // Iterates through all placeholders in the template.
       for (i = 0; i < len; i++) {
         // Extracts the placeholder expression.
-        extracted = stringBetween(out, "{{", "}}");
+        extracted = b(out);
         //Sanitize extracted string
         ext = sanitizeString(extracted);
         // Parse extracted string
-        parsed = parseFunc();
+        parsed = parse();
         // Replace placeholder expression with evaluated value
         out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
       }
     } catch (error) {
+      // Prevents unnecessary errors 
       let reg = /Unexpected token/i;
       if (!reg.test(error))
         console.error("An error occurred while parsing JSX/HTML:\n\n" + error);
@@ -256,7 +265,6 @@ const QueFlow = ((exports) => {
     let parser = new DOMParser(),
       children = [],
       out = "",
-      attributes = [],
       data = [];
 
     let d = parser.parseFromString(jsx, "text/html"),
@@ -304,7 +312,7 @@ const QueFlow = ((exports) => {
   function Render(jsx, selector, position) {
     let app = typeof selector == "string" ? document.querySelector(selector) : selector,
       prep = "";
-    // Checks if the selector is valid.
+    // Checks if the element is valid.
     if (app) {
       let result = jsxToHTML(jsx);
 
@@ -327,7 +335,7 @@ const QueFlow = ((exports) => {
     }
   }
 
-  // Re-renders the content of a specified element, updating its reactive components.
+  // Re-renders the content of a specified element, updating its reactive descendants.
   function iRender(selector) {
     let app = typeof selector == "string" ? document.querySelector(selector) : selector;
     // Checks if the selector is valid.
@@ -374,18 +382,21 @@ const QueFlow = ((exports) => {
     return result;
   }
 
-  // Generates and returns dataQF property based on 'child' parameter
+  // Generates and returns dataQF property
   function generateComponentData(child, isParent, instance) {
     let arr = [],
       attr = getAttributes(child),
       id = child.dataset.qfid;
 
+    const isSVGElement = child instanceof SVGElement;
+
     if (!isParent) {
       attr.push({ attribute: "innerText", value: child.innerText });
     }
-    for (let { attribute, value } of attr) {
 
-      let hasTemplate = (value.includes("{{") && value.includes("}}"));
+    for (let { attribute, value } of attr) {
+      value = value || "";
+      let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
       let len = countPlaceholders(value);
 
       if (!id && hasTemplate) {
@@ -394,18 +405,18 @@ const QueFlow = ((exports) => {
         counterQF++;
       }
 
-      if (child.style[attribute] || child.style[attribute] === "") {
+      if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
         child.style[attribute] = evaluateTemplate(len, value, instance);
-        if ((attribute.toLowerCase()) !== "src") {
+        if (attribute.toLowerCase() !== "src") {
           child.removeAttribute(attribute);
         }
+      } else {
+        child.setAttribute(attribute, evaluateTemplate(len, value, instance));
       }
 
       if (hasTemplate) {
-        (child.style[attribute] || child.style[attribute] === "") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+        ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
       }
-
-
     }
     // Returns arr 
     return arr;
@@ -414,12 +425,14 @@ const QueFlow = ((exports) => {
 
   function objToStyle(selector = "", obj = {}, alt = "") {
     let style = "";
-    const compare = !alt.includes("@keyframes") && !alt.includes("@font-face");
+
+    const compare = alt.indexOf("@keyframes") === -1 && alt.indexOf("@font-face") === -1;
+
     for (const key in obj) {
       const value = obj[key];
 
       if (typeof value === 'string') {
-        let sel = typeof value == "string" || alt.includes('@media') ? selector : '';
+        let sel = typeof value == "string" || alt.indexOf('@media') > -1 ? selector : '';
         style += `\n${ compare ? sel : ""} ${key} {\n${value}\n}`;
       } else {
         style += `\n${key} {\n${objToStyle(selector, value, key)}\n}`;
@@ -457,10 +470,11 @@ const QueFlow = ((exports) => {
       for (let j = 0; j < atLen; j++) {
         const { attribute, value } = attributes[j];
 
-        // Check if the attribute starts with "on" using string startsWith method
+        // Check if the attribute is an event name
         if (attribute.startsWith("on")) {
+          const fun = Function("e", value).bind(instance);
           // Bind the function to the instance directly
-          c[attribute] = Function("e", value).bind(instance);
+          c[attribute] = fun;
         }
       }
     }
@@ -498,6 +512,8 @@ const QueFlow = ((exports) => {
       // Stores the component's reactive elements data
       this.dataQF = [];
 
+      this.renderEvent = qfEvent("qf:render");
+
       let id = this.element.id;
       if (!id) throw new Error("To use component scoped stylesheets, component's element must have a valid id");
 
@@ -524,7 +540,11 @@ const QueFlow = ((exports) => {
           configurable: true
         }
       });
+      this.created = options.created;
+      this.run = options.run;
 
+      if (this.created)
+        eval(`(${this.created}).call(this)`);
     }
 
     render() {
@@ -537,6 +557,9 @@ const QueFlow = ((exports) => {
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];
       handleEventListener(el, this);
+      if (this.run) {
+        eval(`(${this.run}).call(this)`);
+      }
     }
 
     freeze() {
@@ -552,7 +575,7 @@ const QueFlow = ((exports) => {
   }
 
 
-  function style(child, key, evaluated) {
+  function update(child, key, evaluated) {
     if (key.indexOf("style.") > -1) {
       let sliced = key.slice(6);
       if (evaluated !== child.style[sliced]) {
@@ -561,7 +584,7 @@ const QueFlow = ((exports) => {
     } else {
       if (evaluated !== child[key]) {
         if (isNotEvent(key)) {
-          child[key] = evaluated;
+          child.setAttribute(key, evaluated);
         } else {
           child.addEventListener(key.slice(2), evaluated);
         }
@@ -592,7 +615,7 @@ const QueFlow = ((exports) => {
 
         evaluated = evaluateTemplate(len, template, obj);
         key = (key === "class") ? "className" : key;
-        style(child, key, evaluated);
+        update(child, key, evaluated);
       }
     }
 
@@ -603,7 +626,7 @@ const QueFlow = ((exports) => {
       i = 0;
 
     for (i; i < len; i++) {
-      let extracted = stringBetween(input, "{{", "}}");
+      let extracted = b(input);
       input = input.replaceAll("{{" + extracted + "}}", sanitizeString(props[extracted.trim()]));
     }
 
@@ -651,11 +674,5 @@ const QueFlow = ((exports) => {
   exports.QComponent = QComponent;
   exports.Template = Template;
 
-  // Define the exports as an ES Module
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
   return exports;
-
 })({});

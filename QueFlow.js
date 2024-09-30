@@ -556,14 +556,14 @@ const QueFlow = ((exports) => {
   }
 
   function initiateSubComponents(markup) {
-    const subRegex = new RegExp("<\/[A-Z]{1}[a-z]+[>]", "g");
+    const subRegex = new RegExp("<[A-Z]{1}[a-z]+\/[>]", "g");
 
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {
         let func, subName;
         
         try {
-          subName = match.slice(2, -1);
+          subName = match.slice(1, -2);
           func = Function("return " + subName + ".render()")();
         } catch (e) {
           console.error("QueFlow Error:\nAn error occured while rendering subComponent '"+subName+"'");

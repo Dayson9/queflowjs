@@ -1,7 +1,7 @@
 {
   "name": "queflowjs",
-  "version": "1.0.0",
-  "description": "Documentation for QueFlowJS",
+  "version": "4.0.0",
+  "description": "A JavaScript library for declaratively building Web User Interfaces",
   "main": "index.js",
   "repository": "https://github.com/Dayson9/queflowjs",
   "author": "(Dayson)",

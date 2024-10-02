@@ -259,7 +259,7 @@ const QueFlow = ((exports) => {
 
 
   // Converts JSX/HTML string into plain HTML, handling placeholders.
-  function jsxToHTML(jsx, instance) {
+  function jsxToHTML(jsx, instance, sub_id) {
     let parser = new DOMParser(),
       children = [],
       out = "",
@@ -285,6 +285,11 @@ const QueFlow = ((exports) => {
       // Iterates over target elements
       for (let i = 0; i < ln; i++) {
         let c = targetElements[i];
+
+        if (sub_id) {
+          c.dataset.sub_id = sub_id;
+        }
+
         if (!hasChildren(c)) {
           data.push(...generateComponentData(c, false, instance));
         } else {
@@ -469,10 +474,21 @@ const QueFlow = ((exports) => {
         const { attribute, value } = attributes[j];
 
         // Check if the attribute is an event name
-        if (attribute.startsWith("on") && !instance.run) {
-          // Bind the function to the instance directly
-          const fun = Function("e", value).bind(instance);
-          c[attribute] = fun;
+        if (attribute.startsWith("on")) {
+          const sub_id = c.dataset.sub_id;
+          if (sub_id) {
+            const _instance = Function("return " + sub_id)(),
+              fun = Function("e", value).bind(_instance);
+            c[attribute] = fun;
+
+            c.removeAttribute("data-sub_id");
+          } else {
+            // Bind the function to the instance directly
+            const fun = Function("e", value).bind(instance);
+            c[attribute] = fun;
+          }
+        } else {
+          c.removeAttribute("data-sub_id");
         }
       }
     }
@@ -558,12 +574,12 @@ const QueFlow = ((exports) => {
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {
         let func, subName;
-        
+
         try {
           subName = match.slice(1, -2);
-          func = Function("return " + subName + ".render()")();
+          func = Function(`return ${subName}.render("${subName}")`)();
         } catch (e) {
-          console.error("QueFlow Error:\nAn error occured while rendering subComponent '"+subName+"'");
+          console.error("QueFlow Error:\nAn error occured while rendering subComponent '" + subName + "'");
         }
         return func;
       });
@@ -580,7 +596,7 @@ const QueFlow = ((exports) => {
       // Stores the element associated with a component
       this.element = typeof selector == "string" ? document.querySelector(selector) : selector;
 
-      if (!this.element) throw new Error("QueFlow Error:\nElement selector '"+selector+"' is invalid");
+      if (!this.element) throw new Error("QueFlow Error:\nElement selector '" + selector + "' is invalid");
 
       // Creates a reactive signal for the component's data.
       this.data = createSignal(options.data, { forComponent: true, host: this });
@@ -605,10 +621,10 @@ const QueFlow = ((exports) => {
         key: "",
         value: ""
       });
-      
+
       this.created = options.created;
       this.run = options.run;
-      
+
       let id = this.element.id;
       if (!id) throw new Error("QueFlow Error:\nTo use component scoped stylesheets, component's element must have a valid id");
 
@@ -636,8 +652,8 @@ const QueFlow = ((exports) => {
         }
       });
 
-    if (this.created)
-      this.created(this);
+      if (this.created)
+        this.created(this);
 
     }
 
@@ -645,12 +661,16 @@ const QueFlow = ((exports) => {
       let el = this.element;
       // Checks if the component's template is a string or a function.
       let template = this.template instanceof Function ? this.template() : this.template;
+      // Initiate sub-components if they are available 
       template = initiateSubComponents(template);
+      // Convert template to html 
       let rendered = jsxToHTML(template, this);
-
+      // Set innerHTML attribute of the component's element to the converted template
       el.innerHTML = rendered[0];
+      
       this.dataQF = rendered[1];
       handleEventListener(el, this);
+
       if (this.run)
         this.run(this);
     }
@@ -722,14 +742,14 @@ const QueFlow = ((exports) => {
     }
 
 
-    render() {
-      const template = this.template instanceof Function ? this.template() : this.template;
+    render(name) {
+      const template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
       const [el, newTemplate] = getFirstElement(template);
 
       // Initiates sub-component's stylesheet 
       initiateComponentStyle(`#${el.id}`, this);
 
-      const rendered = jsxToHTML(newTemplate, this);
+      const rendered = jsxToHTML(newTemplate, this, name);
 
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];

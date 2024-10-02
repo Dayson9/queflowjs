@@ -4,9 +4,10 @@
   "description": "A JavaScript library for declaratively building Web User Interfaces",
   "main": "index.js",
   "repository": "https://github.com/Dayson9/queflowjs",
-  "author": "(Dayson)",
+  "author": "Dayson",
   "license": "MIT",
   "private": false,
+  "entry-point" : "queflow.js",
   "scripts": {
     "start": "node index.js"
   },

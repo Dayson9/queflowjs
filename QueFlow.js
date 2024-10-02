@@ -41,12 +41,9 @@ const QueFlow = ((exports) => {
     return !reg.test(str);
   }
 
-  function qfEvent(name) {
+  function qfEvent(name, detail) {
     return new CustomEvent(name, {
-      detail: {
-        key: "",
-        value: ""
-      },
+      detail: detail
     });
 
 
@@ -604,8 +601,14 @@ const QueFlow = ((exports) => {
       // Stores the component's reactive elements data
       this.dataQF = [];
 
-      this.renderEvent = qfEvent("qf:render");
-
+      this.renderEvent = qfEvent("qf:render", {
+        key: "",
+        value: ""
+      });
+      
+      this.created = options.created;
+      this.run = options.run;
+      
       let id = this.element.id;
       if (!id) throw new Error("QueFlow Error:\nTo use component scoped stylesheets, component's element must have a valid id");
 
@@ -632,11 +635,10 @@ const QueFlow = ((exports) => {
           configurable: true
         }
       });
-      this.created = options.created;
-      this.run = options.run;
 
-      if (this.created)
-        Function(`(${this.created}).call(this)`)();
+    if (this.created)
+      this.created(this);
+
     }
 
     render() {
@@ -649,9 +651,8 @@ const QueFlow = ((exports) => {
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];
       handleEventListener(el, this);
-      if (this.run) {
-        eval("(" + this.run + ").call(this)");
-      }
+      if (this.run)
+        this.run(this);
     }
 
     freeze() {
@@ -684,9 +685,11 @@ const QueFlow = ((exports) => {
       // Stores the options provided to the component.
       this.options = options;
 
-      // Stores the current 'freeze status' of the component
+      // Stores the current 'freeze status' of the subcomponent
       this.isFrozen = false;
 
+      // Stores the id of the component's mainelement 
+      this.elemId = "";
 
       // Stores the component's stylesheet 
       this.stylesheet = options.stylesheet;
@@ -716,10 +719,6 @@ const QueFlow = ((exports) => {
           mutable: false
         }
       });
-      this.created = options.created;
-
-      if (this.created)
-        Function(`(${this.created}).call(this)`)();
     }
 
 

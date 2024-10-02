@@ -2,11 +2,12 @@ import { header } from './components/header.js';
 import { hero } from './components/hero.js';
 import { footer } from './components/footer.js';
 
+const { QComponent } = QueFlow;
+
 Header = header;
 Hero = hero;
 Footer = footer;
 
-const { QComponent } = QueFlow;
 
 const App = new QComponent("#app", {
   stylesheet: {

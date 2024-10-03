@@ -810,7 +810,31 @@ const QueFlow = ((exports) => {
     }
   }
 
+class Nugget {
+    /**
+     * A class for creating reusable UI components
+     * @param {Object} options    An object containing all required options for the class
+     */
 
+    constructor(options = {}) {
+      // Stores Nugget stylesheet into instance 
+      this.stylesheet = options.stylesheet || "";
+      // Create a variable that holds the template 
+      const template = options.template instanceof Function ? options.template() : options.template;
+      // Create a variable that generates a unique className for Nuggets parent element
+      const className = `qfEl${counterQF}`;
+      // Increment the counterQF variable for later use
+      counterQF++;
+      // Stores template 
+      this.template = `<div class='${className}'>${template}</div>`;
+      // Initaites Nuggets stylesheet
+      initiateStyleSheet("." + className, this);
+    }
+
+    renderToHTML(data) {
+      return renderTemplate(this.template, data);
+    }
+  }
 
 
   // Exports the public APIs of QueFlowJS.

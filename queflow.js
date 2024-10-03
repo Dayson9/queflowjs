@@ -445,7 +445,7 @@ const QueFlow = ((exports) => {
     return style;
   }
 
-  function initiateComponentStyle(selector = "", instance = Object) {
+  function initiateStyleSheet(selector = "", instance = Object) {
     let styles = objToStyle(selector, instance.stylesheet);
 
     (stylesheet.el).textContent += styles;
@@ -501,7 +501,7 @@ const QueFlow = ((exports) => {
 
     const firstElem = body.firstElementChild;
     if (!firstElem.id) {
-      firstElem.id = "qf" + counterQF;
+      firstElem.id = "qfEl" + counterQF;
       counterQF++;
     }
 
@@ -569,7 +569,8 @@ const QueFlow = ((exports) => {
   }
 
   function initiateSubComponents(markup) {
-    const subRegex = new RegExp("<[A-Z]{1}[a-z]+\/[>]", "g");
+    const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{\\s*([^\\}]*)\\s*}\/[>]", "g");
 
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {
@@ -583,8 +584,22 @@ const QueFlow = ((exports) => {
         }
         return func;
       });
-    } else {
-      return markup;
+    }
+
+    if (nuggetRegex.test(markup)) {
+      markup = markup.replace(nuggetRegex, (match) => {
+        const whiteSpaceIndex = match.indexOf(" "),
+          name = match.slice(1, whiteSpaceIndex),
+          data = match.slice(whiteSpaceIndex, -2).trim();
+
+        let func;
+        try {
+          func = Function(`return ${name}.renderToHTML(${data})`)();
+        } catch (e) {
+          console.error("QueFlow Error:\nAn error occured while rendering Nugget '" + name + "'");
+        }
+        return func;
+      });
     }
 
     return markup;
@@ -629,7 +644,7 @@ const QueFlow = ((exports) => {
       if (!id) throw new Error("QueFlow Error:\nTo use component scoped stylesheets, component's element must have a valid id");
 
       // Initiates a component's stylesheet 
-      initiateComponentStyle(`#${id}`, this);
+      initiateStyleSheet(`#${id}`, this);
 
       // Defines properties for the component instance.
       Object.defineProperties(this, {
@@ -667,7 +682,7 @@ const QueFlow = ((exports) => {
       let rendered = jsxToHTML(template, this);
       // Set innerHTML attribute of the component's element to the converted template
       el.innerHTML = rendered[0];
-      
+
       this.dataQF = rendered[1];
       handleEventListener(el, this);
 
@@ -743,11 +758,13 @@ const QueFlow = ((exports) => {
 
 
     render(name) {
-      const template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
+      let template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
+      template = initiateSubComponents(template);
+
       const [el, newTemplate] = getFirstElement(template);
 
       // Initiates sub-component's stylesheet 
-      initiateComponentStyle(`#${el.id}`, this);
+      initiateStyleSheet(`#${el.id}`, this);
 
       const rendered = jsxToHTML(newTemplate, this, name);
 
@@ -759,12 +776,13 @@ const QueFlow = ((exports) => {
     }
   }
 
-  /** Creates a class for managing templates
-   * 
-   * @param {String|Node} element    The element to mount template into
-   * @param {String|Function} templateFunc    A function that returns string to make into a template
-   */
+
   class Template {
+    /** Creates a class for managing templates
+     * 
+     * @param {String|Node} element    The element to mount template into
+     * @param {String|Function} templateFunc    A function that returns string to make into a template
+     */
     constructor(el, stylesheet, templateFunc) {
       this.element = typeof el == "string" ? document.querySelector(el) : el;
 
@@ -776,7 +794,7 @@ const QueFlow = ((exports) => {
       if (!id) throw new Error("QueFlow Error:\nTo use template scoped stylesheets, template's element must have a valid id");
 
       // Initiates a component's stylesheet 
-      initiateComponentStyle(`#${id}`, this);
+      initiateStyleSheet(`#${id}`, this);
 
     }
 
@@ -793,12 +811,15 @@ const QueFlow = ((exports) => {
   }
 
 
+
+
   // Exports the public APIs of QueFlowJS.
   exports.Render = Render;
   exports.createSignal = createSignal;
   exports.iRender = iRender;
   exports.QComponent = QComponent;
   exports.subComponent = subComponent;
+  exports.Nugget = Nugget;
   exports.Template = Template;
 
   return exports;

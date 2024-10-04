@@ -7,7 +7,7 @@
   "author": "Dayson",
   "license": "MIT",
   "private": false,
-  "entry-point" : "queflow.js",
+  "entry-point": "queflow.js",
   "scripts": {
     "start": "node index.js"
   },

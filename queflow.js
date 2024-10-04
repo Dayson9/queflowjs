@@ -632,7 +632,7 @@ const QueFlow = ((exports) => {
       // Stores the component's reactive elements data
       this.dataQF = [];
 
-      this.renderEvent = qfEvent("qf:render", {
+      this.renderEvent = qfEvent("qf:update", {
         key: "",
         value: ""
       });
@@ -817,21 +817,22 @@ class Nugget {
      */
 
     constructor(options = {}) {
-      // Stores Nugget stylesheet into instance 
+      // Stores instanc's stylesheet 
       this.stylesheet = options.stylesheet || "";
       // Create a variable that holds the template 
       const template = options.template instanceof Function ? options.template() : options.template;
-      // Create a variable that generates a unique className for Nuggets parent element
+      // Create a variable that generates a unique className for instance's parent element
       const className = `qfEl${counterQF}`;
       // Increment the counterQF variable for later use
       counterQF++;
       // Stores template 
       this.template = `<div class='${className}'>${template}</div>`;
-      // Initaites Nuggets stylesheet
+      // Initaite stylesheet for instance 
       initiateStyleSheet("." + className, this);
     }
 
     renderToHTML(data) {
+      // Return rendered template with respect to data
       return renderTemplate(this.template, data);
     }
   }

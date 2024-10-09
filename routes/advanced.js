@@ -21,6 +21,14 @@ advanced.get("/direct-css", (req, res) => {
   res.sendFile(fetchFile("direct_css.html"));
 });
 
+advanced.get("/nuggets", (req, res) => {
+  res.sendFile(fetchFile("nuggets.html"));
+});
+
+advanced.get("/subcomponents", (req, res) => {
+  res.sendFile(fetchFile("subcomponents.html"));
+});
+
 app.use(express.static('docs/build'));
 
 module.exports = advanced;

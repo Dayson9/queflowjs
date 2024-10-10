@@ -783,7 +783,6 @@ const QueFlow = ((exports) => {
 
   class Template {
     /** Creates a class for managing templates
-     * 
      * @param {String|Node} element    The element to mount template into
      * @param {String|Function} templateFunc    A function that returns string to make into a template
      */

@@ -74,37 +74,6 @@
 
       <p><span style="font-family: monospace;">{ ... }</span>: This object provides data to the Nugget's template. The keys in the object should match the placeholder names in the template.</p><br><br>
 
-      <!-- // Define card UI
-const MyCard = new Nugget({
-template: (data) => {
-return `
-<div class="card">
-  <h2 color='{{ color }}'>{{ title }}</h2>
-  <p>{{ content }}</p>
-</div>`;
-},
-stylesheet: {
-'.card': `
-border: 1px solid #ddd;
-padding: 10px;
-margin-bottom: 10px;
-`
-}
-});
-
-
-
-//Rendering
-const App = new QComponent("#app", {
-template: () => {
-return `
-<MyCard { title: "Welcome" , color: "dodgerblue" , content: "This is a test card." } />
-<MyCard { title: "Another Card" , color: "teal" , content: "This is another card content." } />
-`;
-}
-});
-
-App.render(); -->
       <b>Benefits of using Nuggets</b><br>
       <ol class="smaller">
         <li>Code reusability:<br> Nuggets allow you to reuse UI components throughout your application, saving time and effort.</li>
@@ -122,7 +91,12 @@ App.render(); -->
           Nugget_2</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
         on <a href="https://codepen.io">CodePen</a>.
       </iframe><br><br>
-
+      <b>Nested Nuggets</b><br>
+      <p>Nested Nuggets are Nuggets used inside the template of another Nugget. This allows you to break down your UI into smaller, manageable components, promoting modularity and code reusability.</p><br>
+      <p>Example using nested buttons:</p>
+      <p>//Codepen here</p><br><br><br>
+      <p>Nesting Nuggets in QueFlowJS is a powerful technique for building complex and maintainable UIs. By breaking down your UI into reusable components, you can achieve cleaner code, faster development cycles, and a more organized project structure.</p>
+      
       <p>In conclusion, Nuggets provide a powerful tool for building reusable UI components. They simplify component management, improve code organization, and allow you to create dynamic and data-driven UIs. Embrace the power of Nuggets and elevate your web development experience.</p>
 
       <hr>

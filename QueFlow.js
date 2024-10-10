@@ -757,7 +757,7 @@ const QueFlow = ((exports) => {
         }
       });
       
-      this.created();
+      if(this.created) this.created();
     }
 
 
@@ -837,7 +837,7 @@ const QueFlow = ((exports) => {
     renderToHTML(data) {
       // Create a variable that holds the template 
       const template = this.template instanceof Function ? this.template(data) : this.template;
-      const html = `<div class='${this.className}'>${template}</div>`;
+      const html = `<div class='${this.className}'>${initiateSubComponents(template)}</div>`;
       // Return rendered template with respect to data
       return renderTemplate(html, data);
     }

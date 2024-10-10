@@ -570,7 +570,7 @@ const QueFlow = ((exports) => {
 
   function initiateSubComponents(markup) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
-      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{([^\\}]*)}\\s*\/[>]", "g");
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{([^\\}]*)}\\s*\/[>]", "g"); 
 
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {

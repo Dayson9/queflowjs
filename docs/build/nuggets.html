@@ -4,11 +4,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <link rel="icon" href="/images/queflow.png" />
+  <title>Nugget | QueFlowJS</title>
+  <meta name="google-site-verification" content="inCPnY2h-YtTgpzPG8z9rgY4oz37HZEC6fxH3ab17mY" />
+
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <link href="https://db.onlinewebfonts.com/c/b75ac497f8189c60b43d8f9d052d8a8c?family=Cabinet+Grotesk+Medium" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="/styles/bulma.min.css">
+  <link rel="stylesheet" href="/styles/style.css">
 </head>
 
 <body>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="/images/queflow.png" alt="QueFlowJS Logo" onclick="toPage('/getting-started')">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
 
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/advanced')">Advanced</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="section">
+      <h1>The Nugget Class</h1><br>
+      <p>Nuggets are self-contained UI elements that encapsulate their own template, style, and data. They provide a way to create reusable UI components that can be easily integrated into your applications. They are lightweight, flexible, and offer a clean syntax for building complex UI structures. They allow you to:</p><br>
+      <ol class="smaller">
+        <li>Create reusable UI components:<br> Avoid writing repetitive code for common UI elements.</li>
+        <li>Improve code organization:<br> Structure your application with clear modularity.</li>
+        <li>Simplify component management:<br> Easily manage and update your components throughout your application.</li>
+      </ol><br><br>
+      <div class="code">
+        <pre>Syntax: 
+          <span class="blue">Nugget</span>
+          <span class="silver">({</span><br></span> 
+          <span class="green">&nbsp;&nbsp;stylesheet</span>
+          <span> : object, <br></span>
+          <span class="green">&nbsp;&nbsp;template</span>
+          <span> : function | string <br></span>})
+          </pre>
+      </div><br><br>
+      <b>Nugget Parameters</b>
+      <ol class="smaller">
+        <li>template:<br> This property defines the structure of the Nugget's HTML. It can be a string or a function that returns a string. The template can include placeholders (`{{...}}`) to dynamically inject data.</li>
+        <li>stylesheet (Object):<br> An optional object that contains CSS styles for your Nugget.</li>
+      </ol><br>
+
+      <b>Using Nuggets:</b>
+      <p>//Codepen here</p><br><br>
+      <!-- const Button = new Nugget({
+      template: () => {
+      return `<button width="{{ w }}" height="{{ h }}" background="{{ bg }}">My Button</button>`;
+      }
+      });
+      ```
+      
+      * <br>`
+      
+      2. <br>Render the Nugget:<br>
+      ```javascript
+      const App = new QComponent("#app", {
+      template: () => {
+      return `<Button { w: 30, h: 12, bg: 'crimson' } />
+      <Button { w: 40, h: 18, bg: 'dodgerblue' } />
+      `;
+      }
+      });
+      
+      App.render();
+      ```
+      
+      * <br>`{ ... }`:<br> This object provides data to the Nugget's template. The keys in the object should match the placeholder names in the template. -->
+
+      <p>Example:</p>
+      <p>//Another codepenn here</p>
+      
+<!-- // Define card UI
+const MyCard = new Nugget({
+template: (data) => {
+return `
+<div class="card">
+  <h2 color='{{ color }}'>{{ title }}</h2>
+  <p>{{ content }}</p>
+</div>`;
+},
+stylesheet: {
+'.card': `
+border: 1px solid #ddd;
+padding: 10px;
+margin-bottom: 10px;
+`
+}
+});
+
+
+
+//Rendering
+const App = new QComponent("#app", {
+template: () => {
+return `
+<MyCard { title: "Welcome" , color: "dodgerblue" , content: "This is a test card." } />
+<MyCard { title: "Another Card" , color: "teal" , content: "This is another card content." } />
+`;
+}
+});
+
+App.render(); -->
+      <b>Benefits of using Nuggets</b><br>
+      <ol class="smaller">
+        <li>Code reusability:<br> Nuggets allow you to reuse UI components throughout your application, saving time and effort.</li>
+        <li>Component-based development:<br> Develop your application in a modular fashion, with clear separation of concerns.</li>
+        <li>Data-driven design:<br> Easily create dynamic UI components based on data.</li>
+      </ol><br><br>
+
+      <b>Advanced Usage:</b>
+      <p>* Stylesheets: You can define styles for your Nuggets using the `stylesheet` option. This allows you to customize the appearance of your Nuggets and maintain a consistent look and feel across your application.</p><br>
+      <p>* Data Injection: Inject data into Nuggets using the `renderToHTML` method. This allows you to create dynamic UI components that adapt to different data inputs.</p><br>
+      <p>* Sub-Components: Nuggets can be composed of other Nuggets, creating complex UI hierarchies.</p><br><br><br>
+      <p>In conclusion, Nuggets provide a powerful tool for building reusable UI components. They simplify component management, improve code organization, and allow you to create dynamic and data-driven UIs. Embrace the power of Nuggets and elevate your web development experience.</p>
+
+      <hr>
+
+      <div class="footer">
+        <div class="col">
+          <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+          <span class="blue" onclick="toPage('/apis')">API Reference</span>
+          <span class="blue" onclick="toPage('/advanced')">Advanced</span>
+          <span class="blue" onclick="toPage('/demos')">Demos</span>
+          <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+        </div>
+
+        <div class="stm">
+          <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+        </div>
+      </div>
+      <script src="/scripts/script.js"></script>
 </body>
 
 </html>

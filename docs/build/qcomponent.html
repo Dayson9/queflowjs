@@ -47,19 +47,32 @@
       <p>The QComponent class in QueFlowJS allows to create and manage reusable components with reactive data and dynamic rendering.</p><br>
       <br>
       <div class="code">
-        <pre>Syntax: <span class="blue">QComponent</span><span class="silver">( </span><span class="green">selector</span><span class="silver"> : string, {<br></span> <span class="green">stylesheet</span><span> : object, <br></span><span class="green">data</span><span> : any, <br></span><span class="green">template</span><span> : function | string, <br></span><span class="green">strict</span><span> : boolean <br>})</span></pre>
+        <pre>Syntax: 
+        <span class="blue">QComponent</span>
+        <span>(</span>
+        <span class="green">selector</span>
+        <span> : string, {<br></span> 
+        <span class="green">&nbsp;&nbsp;stylesheet</span>
+        <span> : object, <br></span>
+        <span class="green">&nbsp;&nbsp;data</span>
+        <span> : object, <br></span>
+        <span class="green">&nbsp;&nbsp;template</span>
+        <span> : function | string, <br></span>
+        <span class="green">&nbsp;&nbsp;created</span>
+        <span> : function, <br></span>
+        <span class="green">&nbsp;&nbsp;run</span><span> : function<br></span>})</span></pre>
       </div><br><br>
 
       <b>Creating a Component</b>
       <p>To create a QComponent, you need to provide the following:</p>
       <ol class="smaller">
-        <li>Selector: A string or DOM element representing the target element where the component will be mounted.</li>
+        <li>Selector:<br>A string or DOM element representing the target element where the component will be mounted.</li>
         <li>Options: An object containing the following properties:</li>
         <ol>
-          <li>data: An object or primitive value representing the initial data for your component.</li>
-          <li>template`: A string or a function that returns a JSX/HTML string representing the component's structure and content.</li>
-          <li>`stylesheet`: (optional) An object containing CSS styles for component-specific styling.</li>
-          <li>strict: (optional) A boolean indicating whether to use `innerHTML` or `innerText` for non-parent elements. Defaults to `true`, using `innerText`</li>
+          <li>data:<br>An object or primitive value representing the initial data for your component.</li>
+          <li>template:<br>A string or a function that returns a JSX/HTML string representing the component's structure and content.</li>
+          <li>stylesheet:<br>(optional) An object containing CSS styles for component-specific styling.</li>
+          <li>strict:<br>(optional) A boolean indicating whether to use innerHTML or innerText for non-parent elements. Defaults to true, using innerText</li>
         </ol>
       </ol>
       <br><br>
@@ -70,40 +83,41 @@
         on <a href="https://codepen.io">CodePen</a>.
       </iframe><br><br><br>
       <b>Reactive Data and Updates</b>
-      <p>The `data` property of a QComponent is a reactive signal. Any changes to the data will automatically trigger a re-render of the component, updating the DOM accordingly.</p><br>
+      <p>The data property of a QComponent is a reactive signal. Any changes to the data will automatically trigger a re-render of the component, updating the DOM accordingly.</p><br>
       <p>Example:</p><br>
       <iframe height="300" style="width: 100%;" scrolling="no" title="QComponent2" src="https://codepen.io/Dayson9/embed/JjQZREN?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-        See the Pen <a href="https://codepen.io/Dayson9/pen/JjQZREN">
-          QComponent2</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        See the Pen <a href="https://codepen.io/Dayson9/pen/JjQZRen">QComponent2</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
         on <a href="https://codepen.io">CodePen</a>.
       </iframe><br><br><br>
       <b>Freezing and Unfreezing Components</b>
       <p>You can prevent a component from further updates/re-rendering by using the freeze() method:</p>
       <div class="code">
         <pre>
-          <span class="silver">myComponent.</span><span class="green">freeze()</span><span class="silver">;</span>
+          <span>myComponent.</span><span class="green">freeze()</span><span class="silver">;</span>
         </pre>
       </div><br>
-      <p>To re-enable updates, use the `unfreeze()` method:</p>
+      <p>To re-enable updates, use the unfreeze() method:</p>
       <div class="code">
         <pre>
-          <span class="silver">myComponent.</span><span class="green">unfreeze()</span><span class="silver">;</span>
+          <span>myComponent.</span><span class="green">unfreeze()</span><span class="silver">;</span>
          </pre>
       </div><br><br>
       <b>Component Scoped Stylesheets</b>
-      <p>The stylesheet option in the `QComponent` constructor allows you to define component-specific styles. The styles will only apply to the component's element and its descendants.</p><br>
+      <p>The stylesheet option in the QComponent constructor allows you to define component-specific styles. The styles will only apply to the component's element and its descendants.</p><br>
       <iframe height="300" style="width: 100%;" scrolling="no" title="QComponent3" src="https://codepen.io/Dayson9/embed/mdZKBve?default-tab=js%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/Dayson9/pen/mdZKBve">
-  Untitled</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
-  on <a href="https://codepen.io">CodePen</a>.
-</iframe><br><br>
+        See the Pen <a href="https://codepen.io/Dayson9/pen/mdZKBve">
+          Untitled</a> by Dayson (<a href="https://codepen.io/Dayson9">@Dayson9</a>)
+        on <a href="https://codepen.io">CodePen</a>.
+      </iframe><br><br>
       <div class="message is-info">
         <div class="message-header">Note</div>
         <div class="message-body smaller">
-          <p>For scoped styles to work, the target element of your component must have a valid `id` attribute.</p>
+          <p>For scoped styles to work, the target element of your component must have a valid id attribute.</p>
         </div>
       </div><br>
-      <a href="https://codepen.io/Dayson9/pen/JjQZREN" target="_blank" class="blue"><p>Try QComponent on Codepen -> </p></a>
+      <a href="https://codepen.io/Dayson9/pen/JjQZREN" target="_blank" class="blue">
+        <p>Try QComponent on Codepen -> </p>
+      </a>
     </div>
 
   </div>

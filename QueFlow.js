@@ -418,7 +418,7 @@ const QueFlow = ((exports) => {
       }
 
       if (hasTemplate) {
-        ((child.style[attribute] || child.style[attribute] === "") && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+        ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }) : arr.push({ template: value, key: attribute, qfid: id });
       }
     }
     // Returns arr 
@@ -511,6 +511,7 @@ const QueFlow = ((exports) => {
 
 
   function update(child, key, evaluated) {
+      const isSVGElement = child instanceof SVGElement;
     if (key.indexOf("style.") > -1) {
       let sliced = key.slice(6);
       if (evaluated !== child.style[sliced]) {
@@ -519,7 +520,7 @@ const QueFlow = ((exports) => {
     } else {
       if (evaluated !== child[key]) {
         if (isNotEvent(key)) {
-          child[key] = evaluated;
+          isSVGElement ? child.setAttribute(key, evaluated) : child[key] = evaluated;
         } else {
           child.addEventListener(key.slice(2), evaluated);
         }
@@ -557,20 +558,19 @@ const QueFlow = ((exports) => {
   }
 
   function renderTemplate(input, props) {
-    let len = countPlaceholders(input),
-      i = 0;
+    const regex = /\{\{[^\{\{]+\}\}/g;
 
-    for (i; i < len; i++) {
-      let extracted = b(input);
-      input = input.replaceAll("{{" + extracted + "}}", sanitizeString(props[extracted.trim()]));
-    }
+    const output = input.replace(regex, (match) => {
+      const extracted = b(match);
+      return props[extracted.trim()] ? sanitizeString(props[extracted.trim()]) : `{{ ${extracted} }}`;
+    });
 
-    return input;
+    return output;
   }
 
   function initiateSubComponents(markup) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
-      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{\\s*([^\\}]*)\\s*}\/[>]", "g");
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{([^\\}]*)}\/[>]", "g");
 
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {
@@ -711,7 +711,7 @@ const QueFlow = ((exports) => {
 
       this.element = {};
 
-      // Creates a reactive signal for the component's data.
+      // Creates a reactive signal for the subcomponent's data.
       this.data = createSignal(options.data, { forComponent: true, host: this });
 
       // Asigns the value of this.data' to _data
@@ -723,18 +723,20 @@ const QueFlow = ((exports) => {
       // Stores the current 'freeze status' of the subcomponent
       this.isFrozen = false;
 
-      // Stores the id of the component's mainelement 
+      // Stores the id of the subcomponent's mainelement 
       this.elemId = "";
+      
+      this.created = options.created;
 
-      // Stores the component's stylesheet 
+      // Stores the subcomponent's stylesheet 
       this.stylesheet = options.stylesheet;
 
-      // Stores the component's reactive elements data
+      // Stores the subcomponent's reactive elements data
       this.dataQF = [];
 
       this.renderEvent = qfEvent("qf:render");
 
-      // Defines properties for the component instance.
+      // Defines properties for the subcomponent instance.
       Object.defineProperties(this, {
         data: {
           // Getters and setters for 'data' property 
@@ -754,6 +756,8 @@ const QueFlow = ((exports) => {
           mutable: false
         }
       });
+      
+      this.created();
     }
 
 
@@ -810,7 +814,7 @@ const QueFlow = ((exports) => {
     }
   }
 
-class Nugget {
+  class Nugget {
     /**
      * A class for creating reusable UI components
      * @param {Object} options    An object containing all required options for the class
@@ -819,21 +823,23 @@ class Nugget {
     constructor(options = {}) {
       // Stores instanc's stylesheet 
       this.stylesheet = options.stylesheet || "";
-      // Create a variable that holds the template 
-      const template = options.template instanceof Function ? options.template() : options.template;
-      // Create a variable that generates a unique className for instance's parent element
-      const className = `qfEl${counterQF}`;
+
+      // Create a property that generates a unique className for instance's parent element
+      this.className = `qfEl${counterQF}`;
       // Increment the counterQF variable for later use
       counterQF++;
       // Stores template 
-      this.template = `<div class='${className}'>${template}</div>`;
+      this.template = options.template;
       // Initaite stylesheet for instance 
-      initiateStyleSheet("." + className, this);
+      initiateStyleSheet("." + this.className, this);
     }
 
     renderToHTML(data) {
+      // Create a variable that holds the template 
+      const template = this.template instanceof Function ? this.template(data) : this.template;
+      const html = `<div class='${this.className}'>${template}</div>`;
       // Return rendered template with respect to data
-      return renderTemplate(this.template, data);
+      return renderTemplate(html, data);
     }
   }
 

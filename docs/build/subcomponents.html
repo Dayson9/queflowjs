@@ -17,7 +17,110 @@
 </head>
 
 <body>
+  <nav class="navbar is-transparent" id="nav">
+    <div class="navbar-brand">
+      <img id="logo" src="/images/queflow.png" alt="QueFlowJS Logo" onclick="toPage('/getting-started')">
+      <a style="color: silver;" href="https://github.com/Dayson9/QueFlowJS" target="_blank" class="navbar-item"><i class="bx bxl-github bx-tada"></i></a>
+      <div class="navbar-burger js-burger hovergreen" data-target="navbarExampleTransparentExample" style="color: #158A81;">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
 
+    <div id="navbarExampleTransparentExample" class="navbar-menu">
+      <div class="navbar-start" id="navstart">
+        <div class="navbar-item" onclick="toPage('/getting-started')">Getting started</div>
+        <div class="navbar-item" onclick="toPage('/apis')">API Reference</div>
+        <div class="navbar-item" onclick="toPage('/advanced')">Advanced</div>
+        <div class="navbar-item" onclick="toPage('/demos')">Demos</div>
+        <div class="navbar-item"><a href="https://github.com/Dayson9/QueFlowJS" target="_blank">GitHub<i class="bx bxl-github"></i></a></div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="page">
+    <div class="section">
+      <h1>The subComponent Class</h1><br>
+      <p>The subComponent class in QueFlowJS is a powerful tool for building reusable, modular UI components within a larger application. It provides a simple, yet effective way to manage data and render HTML templates, all while leveraging the reactivity features of QueFlowJS.</p><br><br>
+      <div class="code">
+        <pre>Syntax: 
+          <span class="blue">subComponent</span>
+          <span class="silver">({</span><br></span> 
+          <span class="green">&nbsp;&nbsp;stylesheet</span>
+          <span> : object, <br></span>
+          <span class="green">&nbsp;&nbsp;data</span>
+          <span> : object, <br></span>
+          <span class="green">&nbsp;&nbsp;template</span>
+          <span> : function | string, <br></span>
+          <span class="green">&nbsp;&nbsp;run</span><span> : function<br></span>})
+          </pre>
+      </div><br><br>
+      <b>SubComponent Parameters</b>
+      <ol class="smaller">
+        <li>template (String or Function):<br> This property holds the template for your subcomponent. You can either provide a static string or a function that dynamically returns the template string.</li>
+        <li>data (Object):<br> A reactive signal that holds the data for your subcomponent. Any changes made to this object will automatically trigger a re-render of the subcomponent.</li>
+        <li>stylesheet (Object):<br> An optional object that contains CSS styles for your subcomponent.</li>
+        <li>created (function):<br> A function that is immediately called when a subComponent is instantiated or created.</li>
+      </ol><br>
+
+      <b>Example Usage:</b>
+      <p>//Codepen here</p><br><br>
+      <!--
+      const { QComponent, subComponent } = QueFlow;
+      
+const Content = new subComponent({
+  stylesheet: {
+   "h1" : 
+    color: teal;
+    text-align: center;
+    
+  },
+  data: {
+    msg: "My subComponent"
+  },
+  template: <h1 onclick="this.data.msg = 'Hello World!'">{{ this.data.msg }}</h1>,
+  created: alert("My subComponent is created")
+});
+
+// Create a component and render Content into it
+const App = new QComponent("#app", {
+  template: () => <Content/>
+});
+
+App.render();
+-->
+
+      <b>Benefits of SubComponents</b><br>
+      <ol class="smaller">
+        <li>Modularity:<br> Subcomponents allow you to break down complex UI into smaller, reusable pieces.</li>
+        <li>Data Management:<br> Each subcomponent manages its own data, promoting separation of concerns.</li>
+        <li>Reactivity:<br> QueFlowJS's reactivity system ensures that your subcomponents automatically update when their data changes.</li>
+        <li>Event Handling:<br> Subcomponents can handle their own events, simplifying event logic in your application.</li>
+      </ol><br><br>
+
+      <p>Here is another example</p>
+      <p>//Codepen here</p><br><br>
+      <p>In conclusion, the subComponent class in QueFlowJS provides a powerful way to build reusable, modular UI components. Its combination of reactivity, data management, and ease of use makes it an excellent choice for creating dynamic and efficient user interfaces in your web applications.</p>
+
+      <hr>
+
+      <div class="footer">
+        <div class="col">
+          <span class="blue" onclick="toPage('/getting-started')">Getting started</span>
+          <span class="blue" onclick="toPage('/apis')">API Reference</span>
+          <span class="blue" onclick="toPage('/advanced')">Advanced</span>
+          <span class="blue" onclick="toPage('/demos')">Demos</span>
+          <a href="https://github.com/Dayson9/QueFlowJS" target="_blank"><span class="blue">GitHub<i class="bx bxl-github"></i></span></a>
+        </div>
+
+        <div class="stm">
+          <span>Built with "&hearts;" by <a href="https://tundeweb9.onrender.com" target="_blank" class="blue">Dayson</a>.</span>
+        </div>
+      </div>
+      <script src="/scripts/script.js"></script>
 </body>
 
 </html>

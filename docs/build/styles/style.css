@@ -84,6 +84,7 @@ ol li {
   text-align: left;
   white-space: normal;
   word-wrap: break-word;
+  font-family: monospace;
 }
 
 .code span {

@@ -6,11 +6,12 @@ const QueFlow = ((exports) => {
   var dataQF = [],
     // Counter for generating unique IDs for elements with reactive data.
     counterQF = 0,
+    nuggetCounter = 0;
 
-    stylesheet = {
-      el: document.createElement("style"),
-      isAppended: false
-    };
+  stylesheet = {
+    el: document.createElement("style"),
+    isAppended: false
+  };
 
   // Selects an element in the DOM using its data-qfid attribute.
   const selectElement = qfid => document.querySelector("[data-qfid=" + qfid + "]");
@@ -33,35 +34,11 @@ const QueFlow = ((exports) => {
     return x > x1 ? x : x1;
   }
 
-  // Checks if a string is not an event handler (e.g., "onclick").
-  function isNotEvent(str) {
-    // Regex to match strings starting with "on".
-    let reg = /^on{1}[a-z]{1,}$/;
-    // Returns true if the string does not match the regex, indicating it's not an event handler.
-    return !reg.test(str);
-  }
 
   function qfEvent(name, detail) {
     return new CustomEvent(name, {
       detail: detail
     });
-
-
-  }
-
-  // Determines if a template needs to be updated based on a given key.
-  function shouldUpdate(temp, key, len) {
-    let objName, decision = false;
-
-    if (!temp) {
-      temp = "";
-    }
-
-    // Checks if the template contains the given key.
-    decision = temp.includes(key);
-
-    // Evaluates the template with the provided length.
-    return [decision, evaluateTemplate(len, temp)];
   }
 
   // Filters out null elements from the given input [Array].
@@ -87,7 +64,6 @@ const QueFlow = ((exports) => {
     // Iterate over filtered dataQF in a single loop
     for (let i = 0; i < dataQF.length; i++) {
       let pieces = dataQF[i];
-      let len = countPlaceholders(pieces.template);
 
       // Cache elements for reuse
       if (!elements[pieces.qfid]) {
@@ -100,7 +76,7 @@ const QueFlow = ((exports) => {
 
       // Reuse cached element
       let el = elements[pieces.qfid];
-      let v = shouldUpdate(pieces.template, key, len);
+      let v = needsUpdate(pieces.template, key);
 
       if (v[0]) {
         update(el, pieces.key, v[1]);
@@ -108,56 +84,51 @@ const QueFlow = ((exports) => {
     }
   }
 
-  // Creates a reactive signal, a proxy object that automatically triggers when its values changes.
+  // Creates a reactive signal, a proxy object that automatically updates the DOM/Component when its values change.
   function createSignal(data, object) {
-    let item = typeof data != "object" ? { value: data } : data;
+    const item = typeof data != "object" ? { value: data } : data;
 
-    let handler = {};
+    function createReactiveObject(obj) {
+      if (typeof obj !== "object") return obj;
 
-    if (object) {
-      let host = object.host;
-      handler = {
-        get: (target, key) => {
-          if (['object', 'array'].indexOf(typeof target[key]) > -1) return createSignal(target[key], host);
-          return target[key];
+      return new Proxy(obj, {
+        get(target, key) {
+          return createReactiveObject(target[key]); // Make nested objects reactive
         },
+        set(target, key, value) {
+          if (target[key] === value) return true;
 
-        set: (target, key, value) => {
-          key = (parseInt(key)) ? parseInt(key) : key;
-          if (!host.isFrozen) {
-            if (key > host.data.length - 1) {
-              target[key] = value; // Update the target object accordingly
-              host.render();
-            } else {
-              // Update the target object accordingly
-              target[key] = value;
-              updateComponent(key, host);
+          target[key] = value; // Update the target object accordingly
+
+          if (object.forComponent) {
+            const host = object.host;
+            key = (parseInt(key)) ? parseInt(key) : key;
+            if (!host.isFrozen) {
+              if (key > host.data.length - 1) {
+                target[key] = value; // Update the target object accordingly
+                host.render();
+              } else {
+                // Update the target object accordingly
+                target[key] = value;
+                updateComponent(key, host);
+              }
             }
+            host.renderEvent.key = key;
+            host.renderEvent.value = value;
+            const elem = typeof host.element == "string" ? document.getElementById(host.element) : host.element;
+            if (elem) {
+              elem.dispatchEvent(host.renderEvent);
+            }
+            return true;
+          } else {
+            updateDOM(key);
           }
-          host.renderEvent.key = key;
-          host.renderEvent.value = value;
-          let elem = typeof host.element !== "string" ? host.element : document.getElementById(host.element);
-          elem.dispatchEvent(host.renderEvent);
           return true;
-        }
-      };
-    } else {
-      handler = {
-        get: (target, key) => {
-          if (['object', 'array'].indexOf(typeof target[key]) > -1) return createSignal(target[key], host);
-
-          return target[key];
         },
-
-        set: (target, key, value) => {
-          target[key] = value;
-          updateDOM(key);
-          return true;
-        }
-      };
+      });
     }
 
-    return new Proxy(item, handler);
+    return createReactiveObject(item);
   }
 
   const b = str => stringBetween(str, "{{", "}}");
@@ -245,7 +216,6 @@ const QueFlow = ((exports) => {
         let name = att.nodeName,
           value = att.nodeValue.trim();
 
-
         arr.push({ attribute: name, value: value });
       }
     } catch (error) {
@@ -258,13 +228,12 @@ const QueFlow = ((exports) => {
   }
 
 
-  // Converts JSX/HTML string into plain HTML, handling placeholders.
+  // Converts JSX/HTML string into plain HTML and Component data, handling placeholders.
   function jsxToHTML(jsx, instance, sub_id) {
     let parser = new DOMParser(),
       children = [],
       out = "",
       data = [];
-
     let d = parser.parseFromString(jsx, "text/html"),
       doc = d.body,
       html = doc.innerHTML;
@@ -418,7 +387,7 @@ const QueFlow = ((exports) => {
       }
 
       if (hasTemplate) {
-        ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }) : arr.push({ template: value, key: attribute, qfid: id });
+        ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
       }
     }
     // Returns arr 
@@ -426,30 +395,49 @@ const QueFlow = ((exports) => {
   }
 
 
-  function objToStyle(selector = "", obj = {}, alt = "") {
+  // Function to convert an object into a CSS string
+  function objToStyle(selector = "", obj = {}, alt = "", shouldSwitch) {
+    // Initialize the style string
     let style = "";
 
+    // Check if the alt value is a keyframe or font-face rule
     const compare = alt.indexOf("@keyframes") === -1 && alt.indexOf("@font-face") === -1;
 
+    // Iterate over each property in the object
     for (const key in obj) {
-      const value = obj[key];
-
+      const value = obj[key],
+        hasFontFace = key.indexOf("@font-face") > -1;
+      // If the value is a string, append it to the style string
       if (typeof value === 'string') {
+        // Determine the selector based on the value and alt
         let sel = typeof value == "string" || alt.indexOf('@media') > -1 ? selector : '';
-        style += `\n${ compare ? sel : ""} ${key} {\n${value}\n}`;
+
+        // Append the property and value to the style string, considering the shouldSwitch flag
+        if (!shouldSwitch) {
+          style += `\n${ compare && !hasFontFace ? sel : ""} ${key} {${value}}\n`;
+        } else {
+          style += `\n${key}${ compare ? sel : ""} {\n${value}}\n`;
+        }
+
       } else {
-        style += `\n${key} {\n${objToStyle(selector, value, key)}\n}`;
+        // If the value is an object, recursively call objToStyle
+        style += `\n${key } {\n${objToStyle(selector, value, key)}\n}`;
       }
     }
 
+    // Return the generated style string
     return style;
   }
 
-  function initiateStyleSheet(selector = "", instance = Object) {
-    let styles = objToStyle(selector, instance.stylesheet);
+  // Function to initiate the stylesheet
+  function initiateStyleSheet(selector = "", instance = Object, shouldSwitch) {
+    // Convert the instance's stylesheet into a CSS string
+    let styles = objToStyle(selector, instance.stylesheet, "", shouldSwitch);
 
+    // Append the styles to the stylesheet element
     (stylesheet.el).textContent += styles;
 
+    // Append the stylesheet to the document head if not already appended
     if (!stylesheet.isAppended) {
       document.head.appendChild(stylesheet.el);
     }
@@ -457,14 +445,12 @@ const QueFlow = ((exports) => {
 
 
   function handleEventListener(parent, instance) {
-    // Use a NodeList directly for faster iteration
+    // Selects all child elements of parent
     const children = parent.querySelectorAll("*"),
       len = children.length;
-
     // Iterate through each child element
     for (let i = 0; i < len; i++) {
       let c = children[i];
-
       // Cache the attributes for faster access
       let attributes = getAttributes(c),
         atLen = attributes.length;
@@ -472,7 +458,6 @@ const QueFlow = ((exports) => {
       // Loop through attributes
       for (let j = 0; j < atLen; j++) {
         const { attribute, value } = attributes[j];
-
         // Check if the attribute is an event name
         if (attribute.startsWith("on")) {
           const sub_id = c.dataset.sub_id;
@@ -480,17 +465,14 @@ const QueFlow = ((exports) => {
             const _instance = Function("return " + sub_id)(),
               fun = Function("e", value).bind(_instance);
             c[attribute] = fun;
-
-            c.removeAttribute("data-sub_id");
           } else {
             // Bind the function to the instance directly
             const fun = Function("e", value).bind(instance);
             c[attribute] = fun;
           }
-        } else {
-          c.removeAttribute("data-sub_id");
         }
       }
+      c.removeAttribute("data-sub_id");
     }
   }
 
@@ -511,7 +493,7 @@ const QueFlow = ((exports) => {
 
 
   function update(child, key, evaluated) {
-      const isSVGElement = child instanceof SVGElement;
+    const isSVGElement = child instanceof SVGElement;
     if (key.indexOf("style.") > -1) {
       let sliced = key.slice(6);
       if (evaluated !== child.style[sliced]) {
@@ -519,7 +501,7 @@ const QueFlow = ((exports) => {
       }
     } else {
       if (evaluated !== child[key]) {
-        if (isNotEvent(key)) {
+        if (!key.startsWith("on")) {
           isSVGElement ? child.setAttribute(key, evaluated) : child[key] = evaluated;
         } else {
           child.addEventListener(key.slice(2), evaluated);
@@ -550,6 +532,7 @@ const QueFlow = ((exports) => {
         let len = countPlaceholders(template);
 
         evaluated = evaluateTemplate(len, template, obj);
+
         key = (key === "class") ? "className" : key;
         update(child, key, evaluated);
       }
@@ -561,8 +544,8 @@ const QueFlow = ((exports) => {
     const regex = /\{\{[^\{\{]+\}\}/g;
 
     const output = input.replace(regex, (match) => {
-      const extracted = b(match);
-      return props[extracted.trim()] ? sanitizeString(props[extracted.trim()]) : `{{ ${extracted} }}`;
+      const extracted = b(match).trim();
+      return props[extracted] ? sanitizeString(props[extracted]) : `{{ ${extracted} }}`;
     });
 
     return output;
@@ -570,19 +553,18 @@ const QueFlow = ((exports) => {
 
   function initiateSubComponents(markup) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
-      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{([^\\}]*)}\\s*\/[>]", "g");
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^\/>]*\\}\\s*\/>", "g");
 
     if (subRegex.test(markup)) {
       markup = markup.replace(subRegex, (match) => {
-        let func, subName;
-
+        let evaluated, subName;
         try {
           subName = match.slice(1, -2);
-          func = Function(`return ${subName}.render("${subName}")`)();
+          evaluated = Function(`return ${subName}.render("${subName}")`)();
         } catch (e) {
-          console.error("QueFlow Error:\nAn error occured while rendering subComponent '" + subName + "'");
+          console.error("QueFlow Error:\nAn error occured while rendering subComponent '" + subName + "'\n" + e);
         }
-        return func;
+        return evaluated;
       });
     }
 
@@ -591,18 +573,56 @@ const QueFlow = ((exports) => {
         const whiteSpaceIndex = match.indexOf(" "),
           name = match.slice(1, whiteSpaceIndex),
           data = match.slice(whiteSpaceIndex, -2).trim();
+        let evaluated;
 
-        let func;
         try {
-          func = Function(`return ${name}.renderToHTML(${data})`)();
+          evaluated = Function(`return ${name}.renderToHTML(${data})`)();
         } catch (e) {
-          console.error("QueFlow Error:\nAn error occured while rendering Nugget '" + name + "'");
+          console.error("QueFlow Error:\nAn error occured while rendering Nugget '" + name + "'\n" + e);
         }
-        return func;
+        return evaluated;
+      });
+    }
+    return lintPlaceholders(markup);
+  }
+
+
+  function g(str, counter) {
+    const parser = new DOMParser(),
+      parsed = parser.parseFromString(str, "text/html"),
+      body = parsed.body;
+
+    const children = body.querySelectorAll("*");
+
+    for (const child of children) {
+      child.dataset.nugget = "nugget" + counter;
+    }
+
+    return body.innerHTML;
+  }
+
+  const lintPlaceholders = (html) => {
+    const attributeRegex = new RegExp("\\s\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g"),
+      eventRegex = new RegExp("\\s[on]\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g");
+
+    if (eventRegex.test(html)) {
+      html = html.replace(eventRegex, (match) => {
+        match = match.replaceAll("'", "\`");
+        const rpl = match.replace("{{", "\'");
+        return rpl.replace(/}}$/, "\'");
       });
     }
 
-    return markup;
+
+    if (attributeRegex.test(html)) {
+      const out = html.replace(attributeRegex, (match) => {
+        const rpl = match.replace("{{", "'{{");
+        return rpl.replace(/}}$/, "}}'");
+      });
+      return out;
+    } else {
+      return html;
+    }
   }
 
 
@@ -680,7 +700,8 @@ const QueFlow = ((exports) => {
       template = initiateSubComponents(template);
       // Convert template to html 
       let rendered = jsxToHTML(template, this);
-      // Set innerHTML attribute of the component's element to the converted template
+
+      // Set innerHTML attribute of component's element to the converted template
       el.innerHTML = rendered[0];
 
       this.dataQF = rendered[1];
@@ -709,8 +730,7 @@ const QueFlow = ((exports) => {
 
       if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent");
 
-      this.element = {};
-
+      this.element = "";
       // Creates a reactive signal for the subcomponent's data.
       this.data = createSignal(options.data, { forComponent: true, host: this });
 
@@ -725,7 +745,7 @@ const QueFlow = ((exports) => {
 
       // Stores the id of the subcomponent's mainelement 
       this.elemId = "";
-      
+
       this.created = options.created;
 
       // Stores the subcomponent's stylesheet 
@@ -756,8 +776,8 @@ const QueFlow = ((exports) => {
           mutable: false
         }
       });
-      
-      if(this.created) this.created();
+
+      if (this.created) this.created(this);
     }
 
 
@@ -774,8 +794,8 @@ const QueFlow = ((exports) => {
 
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];
-      handleEventListener(el, this);
       this.element = el.id;
+
       return rendered[0];
     }
   }
@@ -783,6 +803,7 @@ const QueFlow = ((exports) => {
 
   class Template {
     /** Creates a class for managing templates
+     * 
      * @param {String|Node} element    The element to mount template into
      * @param {String|Function} templateFunc    A function that returns string to make into a template
      */
@@ -821,7 +842,7 @@ const QueFlow = ((exports) => {
 
     constructor(options = {}) {
       // Stores instanc's stylesheet 
-      this.stylesheet = options.stylesheet || "";
+      this.stylesheet = options.stylesheet ?? {};
 
       // Create a property that generates a unique className for instance's parent element
       this.className = `qfEl${counterQF}`;
@@ -829,19 +850,33 @@ const QueFlow = ((exports) => {
       counterQF++;
       // Stores template 
       this.template = options.template;
-      // Initaite stylesheet for instance 
-      initiateStyleSheet("." + this.className, this);
+
+      this.stylesheetInitiated = false;
+      this.counter = 0;
     }
 
     renderToHTML(data) {
+      if (!this.stylesheetInitiated) {
+        nuggetCounter++;
+        this.counter = nuggetCounter;
+      }
+
+      const counter = this.counter;
       // Create a variable that holds the template 
       const template = this.template instanceof Function ? this.template(data) : this.template;
-      const html = `<div class='${this.className}'>${initiateSubComponents(template)}</div>`;
-      // Return rendered template with respect to data
-      return renderTemplate(html, data);
+      const html = g(template, counter);
+
+      if (!this.stylesheetInitiated) {
+        // Initiate stylesheet for instance 
+        initiateStyleSheet(`[data-nugget='${"nugget"+counter}']`, this, true);
+        this.stylesheetInitiated = true;
+      }
+
+      const out = renderTemplate(html, data);
+      // Return template
+      return initiateSubComponents(out);
     }
   }
-
 
   // Exports the public APIs of QueFlowJS.
   exports.Render = Render;

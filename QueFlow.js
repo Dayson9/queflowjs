@@ -551,11 +551,11 @@ const QueFlow = ((exports) => {
     return output;
   }
 
-  function initiateSubComponents(markup) {
+  function initiateSubComponents(markup, isNugget) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
       nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^\/>]*\\}\\s*\/>", "g");
 
-    if (subRegex.test(markup)) {
+    if (subRegex.test(markup) && !isNugget) {
       markup = markup.replace(subRegex, (match) => {
         let evaluated, subName;
         try {
@@ -595,7 +595,7 @@ const QueFlow = ((exports) => {
     const children = body.querySelectorAll("*");
 
     for (const child of children) {
-      child.dataset.nugget = "nugget" + counter;
+      child.classList.add("nugget" + counter);
     }
 
     return body.innerHTML;
@@ -863,18 +863,22 @@ const QueFlow = ((exports) => {
 
       const counter = this.counter;
       // Create a variable that holds the template 
-      const template = this.template instanceof Function ? this.template(data) : this.template;
-      const html = g(template, counter);
+      const template = this.template instanceof Function ? this.template(data) : this.template,
+        // Parse and initiate Nested Nuggets
+        initiated = initiateSubComponents(template, true),
+        // Render parsed html
+        rendered = renderTemplate(initiated, data);
+
+      const html = g(rendered, counter);
 
       if (!this.stylesheetInitiated) {
         // Initiate stylesheet for instance 
-        initiateStyleSheet(`[data-nugget='${"nugget"+counter}']`, this, true);
+        initiateStyleSheet(`.${"nugget"+counter}`, this, true);
         this.stylesheetInitiated = true;
       }
 
-      const out = renderTemplate(html, data);
-      // Return template
-      return initiateSubComponents(out);
+      // Return processed html
+      return html;
     }
   }
 

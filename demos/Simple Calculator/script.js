@@ -52,13 +52,14 @@ const calculator = new QComponent("#app", {
   stylesheet: styles,
   template: () => {
     return (
-      `<h1 color='dodgerblue'>Simple Calculator App</h1>
+      `
+      <h1 color='dodgerblue'>Simple Calculator App</h1>
     
      <p class='out'>Output: {{ this.data.out }}</p>
      
-     <input type='text' value='20*20' id='out'>
+     <input type='text' value='20*20' id='input'>
     
-    <button onclick = "eval(out.value) ? this.data.out = eval(out.value) : ''">Evaluate</button>
+    <button onclick={{ eval(input.value) ? this.data.out = eval(input.value) : ''; }}>Evaluate</button>
     `
     )
   }

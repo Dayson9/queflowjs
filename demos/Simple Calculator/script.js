@@ -59,7 +59,7 @@ const calculator = new QComponent("#app", {
      
      <input type='text' value='20*20' id='input'>
     
-    <button onclick={{ eval(input.value) ? this.data.out = eval(input.value) : ''; }}>Evaluate</button>
+    <button onclick={{ eval(input.value) != "undefined" ? this.data.out = eval(input.value) : ''; }}>Evaluate</button>
     `
     )
   }

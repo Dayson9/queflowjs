@@ -229,55 +229,45 @@ const QueFlow = ((exports) => {
 
   // Converts JSX/HTML string into plain HTML and Component data, handling placeholders.
   function jsxToHTML(jsx, instance, sub_id) {
-    let parser = new DOMParser(),
-      children = [],
-      out = "",
-      data = [];
-    let d = parser.parseFromString(jsx, "text/html"),
-      doc = d.body,
-      html = doc.innerHTML;
-
-    let div = document.createElement("div"),
-      len = countPlaceholders(doc.innerHTML),
-      str = evaluateTemplate(len, doc.innerHTML, instance);
-
-    div.innerHTML = str;
-
-    let docLen = doc.querySelectorAll("*").length;
-    let divLen = div.querySelectorAll("*").length;
-
-    try {
-      let targetElements = divLen > docLen ? div.querySelectorAll("*") : doc.querySelectorAll("*");
-
-      let ln = targetElements.length;
-      // Iterates over target elements
-      for (let i = 0; i < ln; i++) {
-        let c = targetElements[i];
-
-        if (sub_id) {
-          c.dataset.sub_id = sub_id;
+      let parser = new DOMParser(),
+        children = [],
+        out = "",
+        data = [];
+      let d = parser.parseFromString(jsx, "text/html"),
+        doc = d.body;
+  
+  
+      try {
+        let targetElements = doc.querySelectorAll("*");
+  
+        let ln = targetElements.length;
+        // Iterates over target elements
+        for (let i = 0; i < ln; i++) {
+          let c = targetElements[i];
+  
+          if (sub_id && !c.hasAttribute("data-sub_id")) {
+            c.dataset.sub_id = sub_id;
+          }
+  
+          if (!hasChildren(c)) {
+            data.push(...generateComponentData(c, false, instance));
+          } else {
+            data.push(...generateComponentData(c, true, instance));
+          }
         }
-
-        if (!hasChildren(c)) {
-          data.push(...generateComponentData(c, false, instance));
-        } else {
-          data.push(...generateComponentData(c, true, instance));
-        }
+      } catch (error) {
+        console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
       }
-    } catch (error) {
-      console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
+  
+  
+      let finalLen = countPlaceholders(doc.innerHTML);
+      out = evaluateTemplate(finalLen, doc.innerHTML, instance);
+  
+      // Remove temporary elements
+      doc.remove();
+  
+      return [out, data];
     }
-
-    let finalElement = divLen > docLen ? div : doc;
-    let finalLen = countPlaceholders(finalElement.innerHTML);
-    out = evaluateTemplate(finalLen, finalElement.innerHTML, instance);
-
-    // Remove temporary elements
-    doc.remove();
-    div.remove();
-
-    return [out, data];
-  }
 
   // Renders a JSX/HTML string into the specified selector.
   function Render(jsx, selector, position) {
@@ -362,8 +352,9 @@ const QueFlow = ((exports) => {
     const isSVGElement = child instanceof SVGElement;
 
     if (!isParent) {
-      attr.push({ attribute: "innerText", value: child.innerText });
+      attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
     }
+
 
     for (let { attribute, value } of attr) {
       value = value || "";
@@ -498,7 +489,9 @@ const QueFlow = ((exports) => {
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        isSVGElement ? child.setAttribute(key, evaluated) : child[key] = evaluated;
+        child[key] = evaluated;
+        if (child[key] !== evaluated)
+          child.setAttribute(key, evaluated);
       } else {
         child.addEventListener(key.slice(2), evaluated);
       }
@@ -515,7 +508,7 @@ const QueFlow = ((exports) => {
 
   // Updates a component based on changes made to it's data
   function updateComponent(ckey, obj, prev, _new) {
-    if (prev !== _new) {
+    if (prev !== _new || _new === '') {
       // Filters Null elements from the Component
       obj.dataQF = filterNullElements(obj.dataQF);
 
@@ -657,6 +650,13 @@ const QueFlow = ((exports) => {
       this.created = options.created;
       this.run = options.run;
 
+      if (options.useStrict === true || options.useStrict === false) {
+        this.useStrict = options.useStrict;
+      } else {
+        this.useStrict = true;
+      }
+
+
       let id = this.element.id;
       if (!id) throw new Error("QueFlow Error:\nTo use component scoped stylesheets, component's element must have a valid id");
 
@@ -753,6 +753,12 @@ const QueFlow = ((exports) => {
 
       this.renderEvent = qfEvent("qf:render");
 
+      if (options.useStrict === true || options.useStrict === false) {
+        this.useStrict = options.useStrict;
+      } else {
+        this.useStrict = true;
+      }
+
       // Defines properties for the subcomponent instance.
       Object.defineProperties(this, {
         data: {
@@ -786,7 +792,6 @@ const QueFlow = ((exports) => {
 
       // Initiates sub-component's stylesheet 
       initiateStyleSheet(`#${el.id}`, this);
-
       const rendered = jsxToHTML(newTemplate, this, name);
 
       el.innerHTML = rendered[0];

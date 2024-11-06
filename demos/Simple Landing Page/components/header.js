@@ -1,4 +1,4 @@
-const { subComponent } = QueFlow;
+import { subComponent } from 'queflow';
 
 // Styles for header UI
 const styles = {

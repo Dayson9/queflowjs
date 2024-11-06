@@ -2,7 +2,7 @@ import { header } from './components/header.js';
 import { hero } from './components/hero.js';
 import { footer } from './components/footer.js';
 
-const { QComponent } = QueFlow;
+import { QComponent } from 'queflow';
 
 Header = header;
 Hero = hero;

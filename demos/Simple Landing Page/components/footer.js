@@ -1,4 +1,4 @@
-const { subComponent } = QueFlow;
+import { subComponent } from 'queflow';
 
 // Define styles for Footer UI.
 const styles = {

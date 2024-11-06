@@ -229,45 +229,45 @@ const QueFlow = ((exports) => {
 
   // Converts JSX/HTML string into plain HTML and Component data, handling placeholders.
   function jsxToHTML(jsx, instance, sub_id) {
-      let parser = new DOMParser(),
-        children = [],
-        out = "",
-        data = [];
-      let d = parser.parseFromString(jsx, "text/html"),
-        doc = d.body;
-  
-  
-      try {
-        let targetElements = doc.querySelectorAll("*");
-  
-        let ln = targetElements.length;
-        // Iterates over target elements
-        for (let i = 0; i < ln; i++) {
-          let c = targetElements[i];
-  
-          if (sub_id && !c.hasAttribute("data-sub_id")) {
-            c.dataset.sub_id = sub_id;
-          }
-  
-          if (!hasChildren(c)) {
-            data.push(...generateComponentData(c, false, instance));
-          } else {
-            data.push(...generateComponentData(c, true, instance));
-          }
+    let parser = new DOMParser(),
+      children = [],
+      out = "",
+      data = [];
+    let d = parser.parseFromString(jsx, "text/html"),
+      doc = d.body;
+
+
+    try {
+      let targetElements = doc.querySelectorAll("*");
+
+      let ln = targetElements.length;
+      // Iterates over target elements
+      for (let i = 0; i < ln; i++) {
+        let c = targetElements[i];
+
+        if (sub_id && !c.hasAttribute("data-sub_id")) {
+          c.dataset.sub_id = sub_id;
         }
-      } catch (error) {
-        console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
+
+        if (!hasChildren(c)) {
+          data.push(...generateComponentData(c, false, instance));
+        } else {
+          data.push(...generateComponentData(c, true, instance));
+        }
       }
-  
-  
-      let finalLen = countPlaceholders(doc.innerHTML);
-      out = evaluateTemplate(finalLen, doc.innerHTML, instance);
-  
-      // Remove temporary elements
-      doc.remove();
-  
-      return [out, data];
+    } catch (error) {
+      console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
     }
+
+
+    let finalLen = countPlaceholders(doc.innerHTML);
+    out = evaluateTemplate(finalLen, doc.innerHTML, instance);
+
+    // Remove temporary elements
+    doc.remove();
+
+    return [out, data];
+  }
 
   // Renders a JSX/HTML string into the specified selector.
   function Render(jsx, selector, position) {
@@ -508,7 +508,7 @@ const QueFlow = ((exports) => {
 
   // Updates a component based on changes made to it's data
   function updateComponent(ckey, obj, prev, _new) {
-    if (prev !== _new || _new === '') {
+    if (prev !== _new) {
       // Filters Null elements from the Component
       obj.dataQF = filterNullElements(obj.dataQF);
 
@@ -519,7 +519,6 @@ const QueFlow = ((exports) => {
         let child = selectElement(qfid);
         if (needsUpdate(template, ckey)) {
           let len = countPlaceholders(template);
-
           evaluated = evaluateTemplate(len, template, obj);
 
           key = (key === "class") ? "className" : key;
@@ -593,7 +592,7 @@ const QueFlow = ((exports) => {
 
   const lintPlaceholders = (html) => {
     const attributeRegex = new RegExp("\\s\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g"),
-      eventRegex = new RegExp("\\s[on]\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g");
+      eventRegex = new RegExp("\\s(on)\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g");
 
     if (eventRegex.test(html)) {
       html = html.replace(eventRegex, (match) => {

@@ -1,4 +1,4 @@
-import { QComponent } from '/queflow.esm-browser.js';
+import { QComponent } from 'queflow';
 
 
 const styles = {

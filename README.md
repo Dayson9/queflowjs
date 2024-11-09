@@ -1,2 +1,2 @@
 # QueFlowJS
-A mini JavaScript library for building reactive state UI. 🌊
+The JavaScript library for building web Interfaces. 🌊

@@ -2,10 +2,8 @@
 
 const QueFlow = ((exports) => {
   'use-strict';
-  // Stores data for all elements that are not in components/templates.
-  var dataQF = [],
-    // Counter for generating unique IDs for elements with reactive data.
-    counterQF = 0,
+
+  counterQF = 0,
     nuggetCounter = 0;
 
   stylesheet = {
@@ -52,37 +50,6 @@ const QueFlow = ((exports) => {
     });
   }
 
-  // Updates the DOM based on changes to data in the reactive signals.
-  function updateDOM(key) {
-    // Cache selectors for efficiency
-    let elements = {};
-    let eventListeners = {};
-
-    // Filter out null elements before iteration
-    dataQF = filterNullElements(dataQF);
-
-    // Iterate over filtered dataQF in a single loop
-    for (let i = 0; i < dataQF.length; i++) {
-      let pieces = dataQF[i];
-
-      // Cache elements for reuse
-      if (!elements[pieces.qfid]) {
-        elements[pieces.qfid] = selectElement(pieces.qfid);
-        if (!elements[pieces.qfid]) {
-          throw new Error("QueFlow Error:\nAn error occurred while selecting element for QFID: " + pieces.qfid);
-          continue; // Skip to next element if selection failed
-        }
-      }
-
-      // Reuse cached element
-      let el = elements[pieces.qfid];
-      let v = needsUpdate(pieces.template, key);
-
-      if (v[0]) {
-        update(el, pieces.key, v[1]);
-      }
-    }
-  }
 
   // Creates a reactive signal, a proxy object that automatically updates the DOM/Component when its values change.
   function createSignal(data, object) {
@@ -99,18 +66,16 @@ const QueFlow = ((exports) => {
           const prev = target[key];
           target[key] = value; // Update the target object accordingly
 
-          if (object.forComponent) {
-            const host = object.host;
-            key = (parseInt(key)) ? parseInt(key) : key;
-            if (!host.isFrozen) {
-              if (key > host.data.length - 1) {
-                target[key] = value; // Update the target object accordingly
-                host.render();
-              } else {
-                // Update the target object accordingly
-                target[key] = value;
-                updateComponent(key, host, prev, value);
-              }
+          const host = object.host;
+          key = (parseInt(key)) ? parseInt(key) : key;
+          if (!host.isFrozen) {
+            if (key > host.data.length - 1) {
+              target[key] = value; // Update the target object accordingly
+              host.render();
+            } else {
+              // Update the target object accordingly
+              target[key] = value;
+              updateComponent(key, host, prev, value);
             }
             host.renderEvent.key = key;
             host.renderEvent.value = value;
@@ -119,8 +84,6 @@ const QueFlow = ((exports) => {
               elem.dispatchEvent(host.renderEvent);
             }
             return true;
-          } else {
-            updateDOM(key);
           }
           return true;
         },
@@ -173,7 +136,7 @@ const QueFlow = ((exports) => {
       parsed = "",
       ext = "";
 
-    const parse = () => instance ? Function('return ' + ext).call(instance) : Function('"use-strict"; return ' + ext)();
+    const parse = () => Function('return ' + ext).call(instance);
 
     try {
       // Iterates through all placeholders in the template.
@@ -268,54 +231,6 @@ const QueFlow = ((exports) => {
 
     return [out, data];
   }
-
-  // Renders a JSX/HTML string into the specified selector.
-  function Render(jsx, selector, position) {
-    let app = typeof selector == "string" ? document.querySelector(selector) : selector,
-      prep = "";
-    // Checks if the element is valid.
-    if (app) {
-      let result = jsxToHTML(jsx);
-
-      prep = result[0];
-      dataQF = [...dataQF, ...result[1]];
-
-      // Appends the HTML to the target element.
-      if (position == "append") {
-        app.innerHTML += prep;
-      } else if (position == "prepend") {
-        // Prepends the HTML to the target element.
-        let html = app.innerHTML;
-        app.innerHTML = prep + html;
-      } else {
-        app.innerHTML = prep;
-      }
-    } else {
-      // Logs an error if the selector is invalid.
-      throw new Error("QueFlow Error:\nAn element with the provided selector: '" + selector + "' does not exist");
-    }
-  }
-
-  // Re-renders the content of a specified element, updating its reactive descendants.
-  function iRender(selector) {
-    let app = typeof selector == "string" ? document.querySelector(selector) : selector;
-    // Checks if the selector is valid.
-    if (app) {
-      // Checks if the element has children.
-      if (hasChildren(app)) {
-        let result = jsxToHTML(app.innerHTML);
-
-        app.innerHTML = result[0];
-        dataQF = [...dataQF, ...result[1]];
-
-      }
-    } else {
-      // Logs an error if the selector is invalid.
-      throw new Error("QueFlow Error:\nAn element with the provided selector: '" + selector + "' does not exist");
-    }
-  }
-
-
 
 
   //Compares two objects and checks if their key-value pairs are strictly same
@@ -884,9 +799,6 @@ const QueFlow = ((exports) => {
   }
 
   // Exports the public APIs of QueFlowJS.
-  exports.Render = Render;
-  exports.createSignal = createSignal;
-  exports.iRender = iRender;
   exports.QComponent = QComponent;
   exports.subComponent = subComponent;
   exports.Nugget = Nugget;

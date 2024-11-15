@@ -404,9 +404,11 @@ const QueFlow = ((exports) => {
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        child[key] = evaluated;
-        if (child[key] !== evaluated)
+        if (isSVGElement) {
           child.setAttribute(key, evaluated);
+        } else {
+          child[key] = evaluated;
+        }
       } else {
         child.addEventListener(key.slice(2), evaluated);
       }

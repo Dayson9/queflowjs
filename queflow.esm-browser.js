@@ -1,7 +1,7 @@
   'use-strict';
 
-    // Counter for generating unique IDs for elements with reactive data.
-    var counterQF = 0,
+  // Counter for generating unique IDs for elements with reactive data.
+  var counterQF = 0,
     nuggetCounter = 0;
 
   var stylesheet = {
@@ -50,46 +50,46 @@
 
 
   // Creates a reactive signal, a proxy object that automatically updates the DOM/Component when its values change.
-    function createSignal(data, object) {
-      const item = typeof data != "object" ? { value: data } : data;
-  
-      function createReactiveObject(obj) {
-        if (typeof obj !== "object") return obj;
-  
-        return new Proxy(obj, {
-          get(target, key) {
-            return createReactiveObject(target[key]); // Make nested objects reactive
-          },
-          set(target, key, value) {
-            const prev = target[key];
-            target[key] = value; // Update the target object accordingly
-  
-            const host = object.host;
-            key = (parseInt(key)) ? parseInt(key) : key;
-            if (!host.isFrozen) {
-              if (key > host.data.length - 1) {
-                target[key] = value; // Update the target object accordingly
-                host.render();
-              } else {
-                // Update the target object accordingly
-                target[key] = value;
-                updateComponent(key, host, prev, value);
-              }
-              host.renderEvent.key = key;
-              host.renderEvent.value = value;
-              const elem = typeof host.element == "string" ? document.getElementById(host.element) : host.element;
-              if (elem) {
-                elem.dispatchEvent(host.renderEvent);
-              }
-              return true;
+  function createSignal(data, object) {
+    const item = typeof data != "object" ? { value: data } : data;
+
+    function createReactiveObject(obj) {
+      if (typeof obj !== "object") return obj;
+
+      return new Proxy(obj, {
+        get(target, key) {
+          return createReactiveObject(target[key]); // Make nested objects reactive
+        },
+        set(target, key, value) {
+          const prev = target[key];
+          target[key] = value; // Update the target object accordingly
+
+          const host = object.host;
+          key = (parseInt(key)) ? parseInt(key) : key;
+          if (!host.isFrozen) {
+            if (key > host.data.length - 1) {
+              target[key] = value; // Update the target object accordingly
+              host.render();
+            } else {
+              // Update the target object accordingly
+              target[key] = value;
+              updateComponent(key, host, prev, value);
+            }
+            host.renderEvent.key = key;
+            host.renderEvent.value = value;
+            const elem = typeof host.element == "string" ? document.getElementById(host.element) : host.element;
+            if (elem) {
+              elem.dispatchEvent(host.renderEvent);
             }
             return true;
-          },
-        });
-      }
-  
-      return createReactiveObject(item);
+          }
+          return true;
+        },
+      });
     }
+
+    return createReactiveObject(item);
+  }
 
   const b = str => stringBetween(str, "{{", "}}");
 
@@ -403,9 +403,11 @@
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        child[key] = evaluated;
-        if (child[key] !== evaluated)
+        if (isSVGElement) {
           child.setAttribute(key, evaluated);
+        } else {
+          child[key] = evaluated;
+        }
       } else {
         child.addEventListener(key.slice(2), evaluated);
       }

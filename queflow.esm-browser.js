@@ -146,7 +146,9 @@
         // Parse extracted string
         parsed = parse();
         // Replace placeholder expression with evaluated value
-        out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+        if (parsed != "undefined") {
+          out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+        }
       }
     } catch (error) {
       // Prevents unnecessary errors 
@@ -215,6 +217,8 @@
         } else {
           data.push(...generateComponentData(c, true, instance));
         }
+        // Remove duplicate innerText attribute
+        c.removeAttribute("innertext");
       }
     } catch (error) {
       console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
@@ -304,7 +308,7 @@
     // Initialize the style string
     let style = "";
 
-    // Check if the alt value is a keyframe or font-face rule
+    // Check if the alt value is not a keyframe or font-face rule
     const compare = alt.indexOf("@keyframes") === -1 && alt.indexOf("@font-face") === -1;
 
     // Iterate over each property in the object
@@ -397,16 +401,15 @@
 
 
   function update(child, key, evaluated) {
-    const isSVGElement = child instanceof SVGElement;
     if (key.indexOf("style.") > -1) {
       let sliced = key.slice(6);
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        if (isSVGElement) {
-          child.setAttribute(key, evaluated);
-        } else {
+        if (child[key] || child[key] === "") {
           child[key] = evaluated;
+        } else {
+          child.setAttribute(key, evaluated);
         }
       } else {
         child.addEventListener(key.slice(2), evaluated);
@@ -433,6 +436,7 @@
       for (let d of dataQF) {
         let { template, key, qfid } = d;
         let child = selectElement(qfid);
+
         if (needsUpdate(template, ckey)) {
           let len = countPlaceholders(template);
           let evaluated = evaluateTemplate(len, template, obj);
@@ -488,7 +492,7 @@
       });
     }
 
-    return lintPlaceholders(markup);
+    return lintPlaceholders(markup, isNugget);
   }
 
 
@@ -506,11 +510,11 @@
     return body.innerHTML;
   }
 
-  const lintPlaceholders = (html) => {
+  const lintPlaceholders = (html, isNugget) => {
     const attributeRegex = new RegExp("\\s\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g"),
       eventRegex = new RegExp("\\s(on)\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g");
 
-    if (eventRegex.test(html)) {
+    if (eventRegex.test(html) && !isNugget) {
       html = html.replace(eventRegex, (match) => {
         match = match.replaceAll("'", "\`");
         const rpl = match.replace("{{", "\'");
@@ -518,11 +522,10 @@
       });
     }
 
-
     if (attributeRegex.test(html)) {
       const out = html.replace(attributeRegex, (match) => {
-        const rpl = match.replace("{{", "'{{");
-        return rpl.replace(/}}$/, "}}'");
+        const rpl = match.replace("{{", '"{{');
+        return rpl.replace(/}}$/, '}}"');
       });
       return out;
     } else {
@@ -530,6 +533,18 @@
     }
   }
 
+  const removeEvents = (nodeList) => {
+    nodeList.forEach((child) => {
+      const attributes = getAttributes(child);
+
+      for (var { attribute, value } of attributes) {
+        if (attribute.slice(0, 2) === "on") {
+          const fn = child[attribute];
+          child.removeEventListener(attribute, fn);
+        }
+      }
+    });
+  }
 
   class QComponent {
     constructor(selector = "", options = {}) {
@@ -610,6 +625,7 @@
       let template = this.template instanceof Function ? this.template() : this.template;
       // Initiate sub-components if they are available 
       template = initiateSubComponents(template);
+   
       // Convert template to html 
       let rendered = jsxToHTML(template, this);
 
@@ -632,12 +648,23 @@
       // Unfreezes component
       this.isFrozen = false;
     }
+    // removes the component's element from the DOM
+    destroy() {
+      const parent = [this.element, ...this.element.querySelectorAll('*')];
+      removeEvents(parent);
 
+      this.element.remove();
+    }
   }
 
 
   class subComponent {
-    constructor(options = {}) {
+    constructor(name, options = {}) {
+      if (name) {
+        globalThis[name] = this;
+      }
+
+      this.name = name;
       this.template = options?.template;
 
       if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent");
@@ -701,6 +728,7 @@
 
     render(name) {
       let template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
+
       template = initiateSubComponents(template);
 
       const [el, newTemplate] = getFirstElement(template);
@@ -711,9 +739,26 @@
 
       el.innerHTML = rendered[0];
       this.dataQF = rendered[1];
-      this.element = el.id;
+      this.element = el;
 
       return rendered[0];
+    }
+
+    freeze() {
+      // Freezes component
+      this.isFrozen = true;
+    }
+
+    unfreeze() {
+      // Unfreezes component
+      this.isFrozen = false;
+    }
+    // removes the component's element from the DOM
+    destroy() {
+      const parent = [this.element, ...this.element.querySelectorAll('*')];
+      removeEvents(parent);
+
+      this.element.remove();
     }
   }
 
@@ -757,7 +802,10 @@
      * @param {Object} options    An object containing all required options for the component
      */
 
-    constructor(options = {}) {
+    constructor(name, options = {}) {
+      if (name) {
+        globalThis[name] = this;
+      }
       // Stores instanc's stylesheet 
       this.stylesheet = options.stylesheet ?? {};
 
@@ -803,5 +851,5 @@
     QComponent,
     subComponent,
     Nugget,
-    Template,
+    Template
   };

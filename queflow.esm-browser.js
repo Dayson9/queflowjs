@@ -12,25 +12,6 @@
   // Selects an element in the DOM using its data-qfid attribute.
   const selectElement = qfid => document.querySelector("[data-qfid=" + qfid + "]");
 
-  // Counts the number of placeholders ({{...}}) in a given template string.
-  function countPlaceholders(temp) {
-    if (!temp) {
-      temp = "";
-    }
-
-    // Regex to match opening and closing placeholders.
-    let reg = /{{/g;
-    let reg1 = /}}/g;
-
-    // Counts occurrences of both opening and closing placeholders.
-    let x = temp.match(reg) == null ? 0 : temp.match(reg).length;
-    let x1 = temp.match(reg1) == null ? 0 : temp.match(reg1).length;
-
-    // Returns the larger count, ensuring that matching pairs are considered.
-    return x > x1 ? x : x1;
-  }
-
-
   function qfEvent(name, detail) {
     return new CustomEvent(name, {
       detail: detail
@@ -127,29 +108,28 @@
 
 
   // Evaluates a template string by replacing placeholders with their values.
-  function evaluateTemplate(len, reff, instance) {
-    let out = reff,
-      i = 0,
-      extracted = "",
-      parsed = "",
-      ext = "";
+  function evaluateTemplate(reff, instance) {
+    let out = "";
 
-    const parse = () => Function('return ' + ext).call(instance);
-
+    const regex = /\{\{[^\{\{]+\}\}/g;
     try {
-      // Iterates through all placeholders in the template.
-      for (i = 0; i < len; i++) {
-        // Extracts the placeholder expression.
-        extracted = b(out);
-        //Sanitize extracted string
-        ext = sanitizeString(extracted);
-        // Parse extracted string
-        parsed = parse();
-        // Replace placeholder expression with evaluated value
-        if (parsed != "undefined") {
-          out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
+      out = reff.replace(regex, (match) => {
+        const ext = b(match),
+          parse = () => Function('return ' + ext).call(instance),
+          parsed = parse();
+
+        const falsy = ["undefined", "NaN", "null"];
+        let rendered = "";
+
+        if (falsy.includes(parsed) && parsed != "0") {
+          rendered = match;
+        } else {
+          rendered = parsed;
         }
-      }
+
+        return rendered;
+      })
+
     } catch (error) {
       // Prevents unnecessary errors 
       let reg = /Unexpected token/i;
@@ -157,10 +137,10 @@
         console.error("QueFlow Error:\nAn error occurred while parsing JSX/HTML:\n\n" + error);
     }
 
+
     // Returns the evaluated template string.
     return out;
   }
-
 
 
   // Gets the attributes of a DOM element.
@@ -224,9 +204,7 @@
       console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
     }
 
-
-    let finalLen = countPlaceholders(doc.innerHTML);
-    out = evaluateTemplate(finalLen, doc.innerHTML, instance);
+    out = evaluateTemplate(doc.innerHTML, instance);
 
     // Remove temporary elements
     doc.remove();
@@ -277,7 +255,6 @@
     for (let { attribute, value } of attr) {
       value = value || "";
       let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
-      let len = countPlaceholders(value);
 
       if (!id && hasTemplate) {
         child.dataset.qfid = "qf" + counterQF;
@@ -286,12 +263,12 @@
       }
 
       if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
-        child.style[attribute] = evaluateTemplate(len, value, instance);
+        child.style[attribute] = evaluateTemplate(value, instance);
         if (attribute.toLowerCase() !== "src") {
           child.removeAttribute(attribute);
         }
       } else {
-        child.setAttribute(attribute, evaluateTemplate(len, value, instance));
+        child.setAttribute(attribute, evaluateTemplate(value, instance));
       }
 
       if (hasTemplate) {
@@ -438,8 +415,7 @@
         let child = selectElement(qfid);
 
         if (needsUpdate(template, ckey)) {
-          let len = countPlaceholders(template);
-          let evaluated = evaluateTemplate(len, template, obj);
+          let evaluated = evaluateTemplate(template, obj);
 
           key = (key === "class") ? "className" : key;
           update(child, key, evaluated);
@@ -461,7 +437,7 @@
 
   function initiateSubComponents(markup, isNugget) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
-      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^/>]*\\}\\s*\/>", "g");
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^>]*\\}\\s*\/>", "g");
 
     if (subRegex.test(markup) && !isNugget) {
       markup = markup.replace(subRegex, (match) => {
@@ -625,7 +601,7 @@
       let template = this.template instanceof Function ? this.template() : this.template;
       // Initiate sub-components if they are available 
       template = initiateSubComponents(template);
-   
+
       // Convert template to html 
       let rendered = jsxToHTML(template, this);
 
@@ -841,7 +817,6 @@
         initiateStyleSheet(`.${"nugget"+counter}`, this, true);
         this.stylesheetInitiated = true;
       }
-
       // Return processed html
       return html;
     }

@@ -383,7 +383,7 @@
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        if (child[key] || child[key] === "") {
+        if (!child.getAttribute(key)) {
           child[key] = evaluated;
         } else {
           child.setAttribute(key, evaluated);

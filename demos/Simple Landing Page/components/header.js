@@ -33,18 +33,18 @@ const styles = {
 };
 
 
-// Define header subComponent
-const header = new subComponent({
+// Define Header subComponent
+const Header = new subComponent('Header', {
   stylesheet: styles,
   template: () => `
     <div>
       <header>
         <div id='img'></div>
         <h2 class='dark'>QueFlowJS</h2>
-        <button onclick='alert("Nothing to see here, just a demo...")'>View</button>
+        <button onclick={{ alert("Nothing to see here, just a demo...") }}>View</button>
       </header>
     </div>`
 });
 
 
-export { header }
+export default Header;

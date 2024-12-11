@@ -21,7 +21,7 @@ const styles = {
 
 
 // Define subComponent for footer
-const footer = new subComponent({
+const Footer = new subComponent('Footer', {
   stylesheet: styles,
   template: () => `
     <div>
@@ -32,4 +32,4 @@ const footer = new subComponent({
   `
 });
 
-export { footer }
+export default Footer;

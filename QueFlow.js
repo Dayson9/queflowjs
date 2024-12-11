@@ -1,37 +1,22 @@
-/*! QueFlowJS | (c) 2024 Dayson9 | MIT License | https://github.com/dayson9/queflowjs */
-
 const QueFlow = ((exports) => {
+ /*!
+  * QueFlow.js
+  * (c) 2024-now Sodiq Tunde (Dayson9)
+  * Released under the MIT License.
+  */
   'use-strict';
 
-  counterQF = 0,
+  // Counter for generating unique IDs for elements with reactive data.
+  var counterQF = 0,
     nuggetCounter = 0;
 
-  stylesheet = {
+  var stylesheet = {
     el: document.createElement("style"),
     isAppended: false
   };
 
   // Selects an element in the DOM using its data-qfid attribute.
   const selectElement = qfid => document.querySelector("[data-qfid=" + qfid + "]");
-
-  // Counts the number of placeholders ({{...}}) in a given template string.
-  function countPlaceholders(temp) {
-    if (!temp) {
-      temp = "";
-    }
-
-    // Regex to match opening and closing placeholders.
-    let reg = /{{/g;
-    let reg1 = /}}/g;
-
-    // Counts occurrences of both opening and closing placeholders.
-    let x = temp.match(reg) == null ? 0 : temp.match(reg).length;
-    let x1 = temp.match(reg1) == null ? 0 : temp.match(reg1).length;
-
-    // Returns the larger count, ensuring that matching pairs are considered.
-    return x > x1 ? x : x1;
-  }
-
 
   function qfEvent(name, detail) {
     return new CustomEvent(name, {
@@ -129,27 +114,27 @@ const QueFlow = ((exports) => {
 
 
   // Evaluates a template string by replacing placeholders with their values.
-  function evaluateTemplate(len, reff, instance) {
-    let out = reff,
-      i = 0,
-      extracted = "",
-      parsed = "",
-      ext = "";
+  function evaluateTemplate(reff, instance) {
+    let out = "";
 
-    const parse = () => Function('return ' + ext).call(instance);
-
+    const regex = /\{\{[^\{\{]+\}\}/g;
     try {
-      // Iterates through all placeholders in the template.
-      for (i = 0; i < len; i++) {
-        // Extracts the placeholder expression.
-        extracted = b(out);
-        //Sanitize extracted string
-        ext = sanitizeString(extracted);
-        // Parse extracted string
-        parsed = parse();
-        // Replace placeholder expression with evaluated value
-        out = out.replace("{{" + extracted + "}}", sanitizeString(parsed));
-      }
+      out = reff.replace(regex, (match) => {
+        const ext = b(match),
+          parse = () => Function('return ' + ext).call(instance),
+          parsed = parse();
+
+        const falsy = [undefined, NaN, null];
+        let rendered = "";
+
+        if (falsy.includes(parsed) && parsed != "0") {
+          rendered = match;
+        } else {
+          rendered = parsed;
+        }
+        return rendered;
+      })
+
     } catch (error) {
       // Prevents unnecessary errors 
       let reg = /Unexpected token/i;
@@ -157,10 +142,10 @@ const QueFlow = ((exports) => {
         console.error("QueFlow Error:\nAn error occurred while parsing JSX/HTML:\n\n" + error);
     }
 
+
     // Returns the evaluated template string.
     return out;
   }
-
 
 
   // Gets the attributes of a DOM element.
@@ -217,14 +202,14 @@ const QueFlow = ((exports) => {
         } else {
           data.push(...generateComponentData(c, true, instance));
         }
+        // Remove duplicate innerText attribute
+        c.removeAttribute("innertext");
       }
     } catch (error) {
       console.error("QueFlow Error:\nAn error occurred while processing JSX/HTML:\n" + error);
     }
 
-
-    let finalLen = countPlaceholders(doc.innerHTML);
-    out = evaluateTemplate(finalLen, doc.innerHTML, instance);
+    out = evaluateTemplate(doc.innerHTML, instance);
 
     // Remove temporary elements
     doc.remove();
@@ -258,6 +243,7 @@ const QueFlow = ((exports) => {
     return result;
   }
 
+
   // Generates and returns dataQF property
   function generateComponentData(child, isParent, instance) {
     let arr = [],
@@ -274,7 +260,6 @@ const QueFlow = ((exports) => {
     for (let { attribute, value } of attr) {
       value = value || "";
       let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
-      let len = countPlaceholders(value);
 
       if (!id && hasTemplate) {
         child.dataset.qfid = "qf" + counterQF;
@@ -283,12 +268,12 @@ const QueFlow = ((exports) => {
       }
 
       if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
-        child.style[attribute] = evaluateTemplate(len, value, instance);
+        child.style[attribute] = evaluateTemplate(value, instance);
         if (attribute.toLowerCase() !== "src") {
           child.removeAttribute(attribute);
         }
       } else {
-        child.setAttribute(attribute, evaluateTemplate(len, value, instance));
+        child.setAttribute(attribute, evaluateTemplate(value, instance));
       }
 
       if (hasTemplate) {
@@ -305,7 +290,7 @@ const QueFlow = ((exports) => {
     // Initialize the style string
     let style = "";
 
-    // Check if the alt value is a keyframe or font-face rule
+    // Check if the alt value is not a keyframe or font-face rule
     const compare = alt.indexOf("@keyframes") === -1 && alt.indexOf("@font-face") === -1;
 
     // Iterate over each property in the object
@@ -398,16 +383,15 @@ const QueFlow = ((exports) => {
 
 
   function update(child, key, evaluated) {
-    const isSVGElement = child instanceof SVGElement;
     if (key.indexOf("style.") > -1) {
       let sliced = key.slice(6);
       child.style[sliced] = evaluated;
     } else {
       if (!key.startsWith("on")) {
-        if (isSVGElement) {
-          child.setAttribute(key, evaluated);
-        } else {
+        if (!child.getAttribute(key)) {
           child[key] = evaluated;
+        } else {
+          child.setAttribute(key, evaluated);
         }
       } else {
         child.addEventListener(key.slice(2), evaluated);
@@ -434,9 +418,9 @@ const QueFlow = ((exports) => {
       for (let d of dataQF) {
         let { template, key, qfid } = d;
         let child = selectElement(qfid);
+
         if (needsUpdate(template, ckey)) {
-          let len = countPlaceholders(template);
-          evaluated = evaluateTemplate(len, template, obj);
+          let evaluated = evaluateTemplate(template, obj);
 
           key = (key === "class") ? "className" : key;
           update(child, key, evaluated);
@@ -458,14 +442,15 @@ const QueFlow = ((exports) => {
 
   function initiateSubComponents(markup, isNugget) {
     const subRegex = new RegExp("<[A-Z]\\w+\/[>]", "g"),
-      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^/>]*\\}\\s*\/>", "g");
+      nuggetRegex = new RegExp("<([A-Z]\\w+)\\s*\\{[^>]*\\}\\s*\/>", "g");
 
     if (subRegex.test(markup) && !isNugget) {
       markup = markup.replace(subRegex, (match) => {
         let evaluated, subName;
         try {
           subName = match.slice(1, -2);
-          evaluated = Function(`return ${subName}.render("${subName}")`)();
+          const instance = Function("return " + subName)();
+          evaluated = renderSubComponent(instance, subName);
         } catch (e) {
           console.error("QueFlow Error:\nAn error occured while rendering subComponent '" + subName + "'\n" + e);
         }
@@ -481,7 +466,8 @@ const QueFlow = ((exports) => {
         let evaluated;
 
         try {
-          evaluated = Function(`return ${name}.renderToHTML(${data})`)();
+          const [instance, d] = Function(`return [${name}, ${data}]`)();
+          evaluated = renderNugget(instance, d);
         } catch (e) {
           console.error("QueFlow Error:\nAn error occured while rendering Nugget '" + name + "'\n" + e);
         }
@@ -489,7 +475,7 @@ const QueFlow = ((exports) => {
       });
     }
 
-    return lintPlaceholders(markup);
+    return lintPlaceholders(markup, isNugget);
   }
 
 
@@ -507,11 +493,11 @@ const QueFlow = ((exports) => {
     return body.innerHTML;
   }
 
-  const lintPlaceholders = (html) => {
+  const lintPlaceholders = (html, isNugget) => {
     const attributeRegex = new RegExp("\\s\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g"),
       eventRegex = new RegExp("\\s(on)\\w+\\s*[=]\\s*\\{\\{[^\\}\\}]+\\}\\}", "g");
 
-    if (eventRegex.test(html)) {
+    if (eventRegex.test(html) && !isNugget) {
       html = html.replace(eventRegex, (match) => {
         match = match.replaceAll("'", "\`");
         const rpl = match.replace("{{", "\'");
@@ -519,11 +505,10 @@ const QueFlow = ((exports) => {
       });
     }
 
-
     if (attributeRegex.test(html)) {
       const out = html.replace(attributeRegex, (match) => {
-        const rpl = match.replace("{{", "'{{");
-        return rpl.replace(/}}$/, "}}'");
+        const rpl = match.replace("{{", '"{{');
+        return rpl.replace(/}}$/, '}}"');
       });
       return out;
     } else {
@@ -531,6 +516,36 @@ const QueFlow = ((exports) => {
     }
   }
 
+  const removeEvents = (nodeList) => {
+    nodeList.forEach((child) => {
+      const attributes = getAttributes(child);
+
+      for (var { attribute, value } of attributes) {
+        if (attribute.slice(0, 2) === "on") {
+          const fn = child[attribute];
+          child.removeEventListener(attribute, fn);
+        }
+      }
+    });
+  }
+
+  const renderSubComponent = (instance, name) => {
+    let template = "<div>" + (instance.template instanceof Function ? instance.template() : instance.template) + "</div>";
+
+    template = initiateSubComponents(template);
+
+    const [el, newTemplate] = getFirstElement(template);
+
+    // Initiates sub-component's stylesheet 
+    initiateStyleSheet(`#${el.id}`, instance);
+    const rendered = jsxToHTML(newTemplate, instance, name);
+
+    el.innerHTML = rendered[0];
+    instance.dataQF = rendered[1];
+    instance.element = el;
+
+    return rendered[0];
+  }
 
   class QComponent {
     constructor(selector = "", options = {}) {
@@ -611,6 +626,7 @@ const QueFlow = ((exports) => {
       let template = this.template instanceof Function ? this.template() : this.template;
       // Initiate sub-components if they are available 
       template = initiateSubComponents(template);
+
       // Convert template to html 
       let rendered = jsxToHTML(template, this);
 
@@ -633,15 +649,26 @@ const QueFlow = ((exports) => {
       // Unfreezes component
       this.isFrozen = false;
     }
+    // removes the component's element from the DOM
+    destroy() {
+      const parent = [this.element, ...this.element.querySelectorAll('*')];
+      removeEvents(parent);
 
+      this.element.remove();
+    }
   }
 
 
   class subComponent {
-    constructor(options = {}) {
+    constructor(name, options = {}) {
+      if (name) {
+        globalThis[name] = this;
+      }
+
+      this.name = name;
       this.template = options?.template;
 
-      if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent");
+      if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent " + name);
 
       this.element = "";
       // Creates a reactive signal for the subcomponent's data.
@@ -687,7 +714,7 @@ const QueFlow = ((exports) => {
             if (!isSame(data, this.data) && !this.isFrozen) {
               _data = createSignal(data, { forComponent: true, host: this });
               this.dataQF = filterNullElements(this.dataQF);
-              this.render();
+              renderSubComponent(this, this.name);
             }
             return true;
           },
@@ -699,22 +726,22 @@ const QueFlow = ((exports) => {
       if (this.created) this.created(this);
     }
 
+    freeze() {
+      // Freezes component
+      this.isFrozen = true;
+    }
 
-    render(name) {
-      let template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
-      template = initiateSubComponents(template);
+    unfreeze() {
+      // Unfreezes component
+      this.isFrozen = false;
+    }
+    // removes the component's element from the DOM
+    destroy() {
+      const all = [this.element, ...this.element.querySelectorAll('*')];
+      // Removes event listeners attached to the component's element and its child nodes
+      removeEvents(all);
 
-      const [el, newTemplate] = getFirstElement(template);
-
-      // Initiates sub-component's stylesheet 
-      initiateStyleSheet(`#${el.id}`, this);
-      const rendered = jsxToHTML(newTemplate, this, name);
-
-      el.innerHTML = rendered[0];
-      this.dataQF = rendered[1];
-      this.element = el.id;
-
-      return rendered[0];
+      this.element.remove();
     }
   }
 
@@ -752,13 +779,41 @@ const QueFlow = ((exports) => {
     }
   }
 
+  const renderNugget = (instance, data) => {
+    if (!instance.stylesheetInitiated) {
+      nuggetCounter++;
+      instance.counter = nuggetCounter;
+    }
+
+    const counter = instance.counter;
+    // Create a variable that holds the template 
+    const template = instance.template instanceof Function ? instance.template(data) : instance.template,
+      // Parse and initiate Nested Nuggets
+      initiated = initiateSubComponents(template, true),
+      // Render parsed html
+      rendered = renderTemplate(initiated, data);
+
+    const html = g(rendered, counter);
+
+    if (!instance.stylesheetInitiated) {
+      // Initiate stylesheet for instance 
+      initiateStyleSheet(`.${"nugget"+counter}`, instance, true);
+      instance.stylesheetInitiated = true;
+    }
+    // Return processed html
+    return html;
+  }
+
   class Nugget {
     /**
      * A class for creating reusable UI components
      * @param {Object} options    An object containing all required options for the component
      */
 
-    constructor(options = {}) {
+    constructor(name, options = {}) {
+      if (name) {
+        globalThis[name] = this;
+      }
       // Stores instanc's stylesheet 
       this.stylesheet = options.stylesheet ?? {};
 
@@ -768,35 +823,8 @@ const QueFlow = ((exports) => {
       counterQF++;
       // Stores template 
       this.template = options.template;
-
       this.stylesheetInitiated = false;
       this.counter = 0;
-    }
-
-    renderToHTML(data) {
-      if (!this.stylesheetInitiated) {
-        nuggetCounter++;
-        this.counter = nuggetCounter;
-      }
-
-      const counter = this.counter;
-      // Create a variable that holds the template 
-      const template = this.template instanceof Function ? this.template(data) : this.template,
-        // Parse and initiate Nested Nuggets
-        initiated = initiateSubComponents(template, true),
-        // Render parsed html
-        rendered = renderTemplate(initiated, data);
-
-      const html = g(rendered, counter);
-
-      if (!this.stylesheetInitiated) {
-        // Initiate stylesheet for instance 
-        initiateStyleSheet(`.${"nugget"+counter}`, this, true);
-        this.stylesheetInitiated = true;
-      }
-
-      // Return processed html
-      return html;
     }
   }
 

@@ -1,12 +1,8 @@
-import { header } from './components/header.js';
-import { hero } from './components/hero.js';
-import { footer } from './components/footer.js';
+import Header from './components/header.js';
+import Hero from './components/hero.js';
+import Footer from './components/footer.js';
 
 import { QComponent } from 'queflow';
-
-Header = header;
-Hero = hero;
-Footer = footer;
 
 
 const App = new QComponent("#app", {

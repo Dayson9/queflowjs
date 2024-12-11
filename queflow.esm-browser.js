@@ -1,3 +1,8 @@
+ /*!
+  * QueFlow.js
+  * (c) 2024-now Sodiq Tunde (Dayson9)
+  * Released under the MIT License.
+  */
   'use-strict';
 
   // Counter for generating unique IDs for elements with reactive data.
@@ -118,7 +123,7 @@
           parse = () => Function('return ' + ext).call(instance),
           parsed = parse();
 
-        const falsy = ["undefined", "NaN", "null"];
+        const falsy = [undefined, NaN, null];
         let rendered = "";
 
         if (falsy.includes(parsed) && parsed != "0") {
@@ -126,7 +131,6 @@
         } else {
           rendered = parsed;
         }
-
         return rendered;
       })
 
@@ -444,7 +448,8 @@
         let evaluated, subName;
         try {
           subName = match.slice(1, -2);
-          evaluated = Function(`return ${subName}.render("${subName}")`)();
+          const instance = Function("return " + subName)();
+          evaluated = renderSubComponent(instance, subName);
         } catch (e) {
           console.error("QueFlow Error:\nAn error occured while rendering subComponent '" + subName + "'\n" + e);
         }
@@ -460,7 +465,8 @@
         let evaluated;
 
         try {
-          evaluated = Function(`return ${name}.renderToHTML(${data})`)();
+          const [instance, d] = Function(`return [${name}, ${data}]`)();
+          evaluated = renderNugget(instance, d);
         } catch (e) {
           console.error("QueFlow Error:\nAn error occured while rendering Nugget '" + name + "'\n" + e);
         }
@@ -520,6 +526,24 @@
         }
       }
     });
+  }
+
+  const renderSubComponent = (instance, name) => {
+    let template = "<div>" + (instance.template instanceof Function ? instance.template() : instance.template) + "</div>";
+
+    template = initiateSubComponents(template);
+
+    const [el, newTemplate] = getFirstElement(template);
+
+    // Initiates sub-component's stylesheet 
+    initiateStyleSheet(`#${el.id}`, instance);
+    const rendered = jsxToHTML(newTemplate, instance, name);
+
+    el.innerHTML = rendered[0];
+    instance.dataQF = rendered[1];
+    instance.element = el;
+
+    return rendered[0];
   }
 
   class QComponent {
@@ -643,7 +667,7 @@
       this.name = name;
       this.template = options?.template;
 
-      if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent");
+      if (!this.template) throw new Error("QueFlow Error:\nTemplate not provided for Subcomponent " + name);
 
       this.element = "";
       // Creates a reactive signal for the subcomponent's data.
@@ -689,7 +713,7 @@
             if (!isSame(data, this.data) && !this.isFrozen) {
               _data = createSignal(data, { forComponent: true, host: this });
               this.dataQF = filterNullElements(this.dataQF);
-              this.render();
+              renderSubComponent(this, this.name);
             }
             return true;
           },
@@ -699,25 +723,6 @@
       });
 
       if (this.created) this.created(this);
-    }
-
-
-    render(name) {
-      let template = "<div>" + (this.template instanceof Function ? this.template() : this.template) + "</div>";
-
-      template = initiateSubComponents(template);
-
-      const [el, newTemplate] = getFirstElement(template);
-
-      // Initiates sub-component's stylesheet 
-      initiateStyleSheet(`#${el.id}`, this);
-      const rendered = jsxToHTML(newTemplate, this, name);
-
-      el.innerHTML = rendered[0];
-      this.dataQF = rendered[1];
-      this.element = el;
-
-      return rendered[0];
     }
 
     freeze() {
@@ -731,8 +736,9 @@
     }
     // removes the component's element from the DOM
     destroy() {
-      const parent = [this.element, ...this.element.querySelectorAll('*')];
-      removeEvents(parent);
+      const all = [this.element, ...this.element.querySelectorAll('*')];
+      // Removes event listeners attached to the component's element and its child nodes
+      removeEvents(all);
 
       this.element.remove();
     }
@@ -772,6 +778,31 @@
     }
   }
 
+  const renderNugget = (instance, data) => {
+    if (!instance.stylesheetInitiated) {
+      nuggetCounter++;
+      instance.counter = nuggetCounter;
+    }
+
+    const counter = instance.counter;
+    // Create a variable that holds the template 
+    const template = instance.template instanceof Function ? instance.template(data) : instance.template,
+      // Parse and initiate Nested Nuggets
+      initiated = initiateSubComponents(template, true),
+      // Render parsed html
+      rendered = renderTemplate(initiated, data);
+
+    const html = g(rendered, counter);
+
+    if (!instance.stylesheetInitiated) {
+      // Initiate stylesheet for instance 
+      initiateStyleSheet(`.${"nugget"+counter}`, instance, true);
+      instance.stylesheetInitiated = true;
+    }
+    // Return processed html
+    return html;
+  }
+
   class Nugget {
     /**
      * A class for creating reusable UI components
@@ -791,34 +822,8 @@
       counterQF++;
       // Stores template 
       this.template = options.template;
-
       this.stylesheetInitiated = false;
       this.counter = 0;
-    }
-
-    renderToHTML(data) {
-      if (!this.stylesheetInitiated) {
-        nuggetCounter++;
-        this.counter = nuggetCounter;
-      }
-
-      const counter = this.counter;
-      // Create a variable that holds the template 
-      const template = this.template instanceof Function ? this.template(data) : this.template,
-        // Parse and initiate Nested Nuggets
-        initiated = initiateSubComponents(template, true),
-        // Render parsed html
-        rendered = renderTemplate(initiated, data);
-
-      const html = g(rendered, counter);
-
-      if (!this.stylesheetInitiated) {
-        // Initiate stylesheet for instance 
-        initiateStyleSheet(`.${"nugget"+counter}`, this, true);
-        this.stylesheetInitiated = true;
-      }
-      // Return processed html
-      return html;
     }
   }
 

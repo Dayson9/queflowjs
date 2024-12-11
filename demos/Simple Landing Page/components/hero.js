@@ -31,7 +31,7 @@ const styles = {
 }
 
 // Define subComponent for hero
-const hero = new subComponent({
+const Hero = new subComponent('Hero', {
   stylesheet: styles,
   template: () => `
     <div>
@@ -49,4 +49,4 @@ const hero = new subComponent({
   `
 });
 
-export { hero }
+export default Hero;

@@ -244,49 +244,49 @@ const QueFlow = ((exports) => {
   }
 
 
-        ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+  ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
   // Generates and returns dataQF property
-    function generateComponentData(child, isParent, instance) {
-      let arr = [],
-        attr = getAttributes(child),
-        id = child.dataset.qfid;
-  
-      const isSVGElement = child instanceof SVGElement;
-  
-      if (!isParent) {
-        attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
-      }
-  
-  
-      for (let { attribute, value } of attr) {
-        value = value || "";
-        let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
-  
-        if (!id && hasTemplate) {
-          child.dataset.qfid = "qf" + counterQF;
-          id = "qf" + counterQF;
-          counterQF++;
-        }
-  
-        if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
-          child.style[attribute] = evaluateTemplate(value, instance);
-          if (attribute.toLowerCase() !== "src") {
-            child.removeAttribute(attribute);
-          }
-        } else {
-          child.setAttribute(attribute, evaluateTemplate(value, instance));
-        }
-  
-        if (hasTemplate) {
-          const _eval = evaluateTemplate(value, instance);
-          if (_eval !== value) {
-            ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
-          }
-        }
-      }
-      // Returns arr 
-      return arr;
+  function generateComponentData(child, isParent, instance) {
+    let arr = [],
+      attr = getAttributes(child),
+      id = child.dataset.qfid;
+
+    const isSVGElement = child instanceof SVGElement;
+
+    if (!isParent) {
+      attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
     }
+
+
+    for (let { attribute, value } of attr) {
+      value = value || "";
+      let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
+
+      if (!id && hasTemplate) {
+        child.dataset.qfid = "qf" + counterQF;
+        id = "qf" + counterQF;
+        counterQF++;
+      }
+
+      if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
+        child.style[attribute] = evaluateTemplate(value, instance);
+        if (attribute.toLowerCase() !== "src") {
+          child.removeAttribute(attribute);
+        }
+      } else {
+        child.setAttribute(attribute, evaluateTemplate(value, instance));
+      }
+
+      if (hasTemplate) {
+        const _eval = evaluateTemplate(value, instance);
+        if (_eval !== value) {
+          ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+        }
+      }
+    }
+    // Returns arr 
+    return arr;
+  }
 
   // Function to initiate the stylesheet
   function initiateStyleSheet(selector = "", instance = Object, shouldSwitch) {

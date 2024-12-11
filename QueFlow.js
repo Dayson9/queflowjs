@@ -244,80 +244,49 @@ const QueFlow = ((exports) => {
   }
 
 
-  // Generates and returns dataQF property
-  function generateComponentData(child, isParent, instance) {
-    let arr = [],
-      attr = getAttributes(child),
-      id = child.dataset.qfid;
-
-    const isSVGElement = child instanceof SVGElement;
-
-    if (!isParent) {
-      attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
-    }
-
-
-    for (let { attribute, value } of attr) {
-      value = value || "";
-      let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
-
-      if (!id && hasTemplate) {
-        child.dataset.qfid = "qf" + counterQF;
-        id = "qf" + counterQF;
-        counterQF++;
-      }
-
-      if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
-        child.style[attribute] = evaluateTemplate(value, instance);
-        if (attribute.toLowerCase() !== "src") {
-          child.removeAttribute(attribute);
-        }
-      } else {
-        child.setAttribute(attribute, evaluateTemplate(value, instance));
-      }
-
-      if (hasTemplate) {
         ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+  // Generates and returns dataQF property
+    function generateComponentData(child, isParent, instance) {
+      let arr = [],
+        attr = getAttributes(child),
+        id = child.dataset.qfid;
+  
+      const isSVGElement = child instanceof SVGElement;
+  
+      if (!isParent) {
+        attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
       }
-    }
-    // Returns arr 
-    return arr;
-  }
-
-
-  // Function to convert an object into a CSS string
-  function objToStyle(selector = "", obj = {}, alt = "", shouldSwitch) {
-    // Initialize the style string
-    let style = "";
-
-    // Check if the alt value is not a keyframe or font-face rule
-    const compare = alt.indexOf("@keyframes") === -1 && alt.indexOf("@font-face") === -1;
-
-    // Iterate over each property in the object
-    for (const key in obj) {
-      const value = obj[key],
-        hasFontFace = key.indexOf("@font-face") > -1;
-      // If the value is a string, append it to the style string
-      if (typeof value === 'string') {
-        // Determine the selector based on the value and alt
-        let sel = typeof value == "string" || alt.indexOf('@media') > -1 ? selector : '';
-
-        // Append the property and value to the style string, considering the shouldSwitch flag
-        if (!shouldSwitch) {
-          style += `\n${ compare && !hasFontFace ? sel : ""} ${key} {${value}}\n`;
-        } else {
-          style += `\n${key}${ compare ? sel : ""} {\n${value}}\n`;
+  
+  
+      for (let { attribute, value } of attr) {
+        value = value || "";
+        let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
+  
+        if (!id && hasTemplate) {
+          child.dataset.qfid = "qf" + counterQF;
+          id = "qf" + counterQF;
+          counterQF++;
         }
-
-      } else {
-        // If the value is an object, recursively call objToStyle
-        style += `\n${key } {\n${objToStyle(selector, value, key)}\n}`;
+  
+        if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
+          child.style[attribute] = evaluateTemplate(value, instance);
+          if (attribute.toLowerCase() !== "src") {
+            child.removeAttribute(attribute);
+          }
+        } else {
+          child.setAttribute(attribute, evaluateTemplate(value, instance));
+        }
+  
+        if (hasTemplate) {
+          const _eval = evaluateTemplate(value, instance);
+          if (_eval !== value) {
+            ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+          }
+        }
       }
+      // Returns arr 
+      return arr;
     }
-
-    // Return the generated style string
-    return style;
-  }
 
   // Function to initiate the stylesheet
   function initiateStyleSheet(selector = "", instance = Object, shouldSwitch) {

@@ -244,8 +244,7 @@ const QueFlow = ((exports) => {
   }
 
 
-  ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
-  // Generates and returns dataQF property
+    // Generates and returns dataQF property
   function generateComponentData(child, isParent, instance) {
     let arr = [],
       attr = getAttributes(child),

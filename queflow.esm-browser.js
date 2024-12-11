@@ -224,7 +224,7 @@
      result = false;
 
    // If their lengths isn't the same, the objects are different
-   if (key1.length != key1.length) {
+   if (key1.length !== key2.length) {
      result = false;
    } else {
      // Else, iterate over the key-value pairs and compare

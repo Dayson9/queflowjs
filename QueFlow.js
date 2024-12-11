@@ -1,9 +1,9 @@
 const QueFlow = ((exports) => {
- /*!
-  * QueFlow.js
-  * (c) 2024-now Sodiq Tunde (Dayson9)
-  * Released under the MIT License.
-  */
+  /*!
+   * QueFlow.js
+   * (c) 2024-now Sodiq Tunde (Dayson9)
+   * Released under the MIT License.
+   */
   'use-strict';
 
   // Counter for generating unique IDs for elements with reactive data.

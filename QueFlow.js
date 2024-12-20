@@ -100,13 +100,15 @@ const QueFlow = ((exports) => {
   }
 
   // Sanitizes a string to prevent potential XSS attacks.
-  function sanitizeString(str) {
-    let excluded_chars = [{ from: "&gt;", to: ">" }, { from: "&lt;", to: "<" }, { from: "<script>", to: "&lt;script&gt;" }, { from: "</script>", to: "&lt;/script&gt;" }];
+  function sanitizeString(str, shouldSkip) {
+    const excluded_chars = [{ from: "&gt;", to: ">" }, { from: "&lt;", to: "<" }, { from: "<script>", to: "&lt;script&gt;" }, { from: "</script>", to: "&lt;/script&gt;" }];
 
     str = new String(str);
 
-    for (let { from, to } of excluded_chars) {
-      str = str.replaceAll(from, to);
+    for (const index in excluded_chars) {
+      const { from, to } = excluded_chars[index];
+      if (!shouldSkip && index !== 0)
+        str = str.replaceAll(from, to);
     }
 
     return str.replace(/javascript:/gi, '');
@@ -120,7 +122,7 @@ const QueFlow = ((exports) => {
     const regex = /\{\{[^\{\{]+\}\}/g;
     try {
       out = reff.replace(regex, (match) => {
-        const ext = b(match),
+        const ext = b(match.replace('&gt;', '>')),
           parse = () => Function('return ' + ext).call(instance),
           parsed = parse();
 
@@ -244,7 +246,7 @@ const QueFlow = ((exports) => {
   }
 
 
-    // Generates and returns dataQF property
+  // Generates and returns dataQF property
   function generateComponentData(child, isParent, instance) {
     let arr = [],
       attr = getAttributes(child),
@@ -402,7 +404,8 @@ const QueFlow = ((exports) => {
 
     const output = input.replace(regex, (match) => {
       const extracted = b(match).trim();
-      return props[extracted] ? sanitizeString(props[extracted]) : `{{ ${extracted} }}`;
+      const value = props[extracted];
+      return value ? sanitizeString(value, true) : `{{ ${extracted} }}`;
     });
 
     return output;

@@ -99,13 +99,15 @@
  }
 
  // Sanitizes a string to prevent potential XSS attacks.
- function sanitizeString(str) {
-   let excluded_chars = [{ from: "&gt;", to: ">" }, { from: "&lt;", to: "<" }, { from: "<script>", to: "&lt;script&gt;" }, { from: "</script>", to: "&lt;/script&gt;" }];
+ function sanitizeString(str, shouldSkip) {
+   const excluded_chars = [{ from: "&gt;", to: ">" }, { from: "&lt;", to: "<" }, { from: "<script>", to: "&lt;script&gt;" }, { from: "</script>", to: "&lt;/script&gt;" }];
 
    str = new String(str);
 
-   for (let { from, to } of excluded_chars) {
-     str = str.replaceAll(from, to);
+   for (const index in excluded_chars) {
+     const { from, to } = excluded_chars[index];
+     if (!shouldSkip && index !== 0)
+       str = str.replaceAll(from, to);
    }
 
    return str.replace(/javascript:/gi, '');
@@ -119,7 +121,7 @@
    const regex = /\{\{[^\{\{]+\}\}/g;
    try {
      out = reff.replace(regex, (match) => {
-       const ext = b(match),
+       const ext = b(match.replace('&gt;', '>')),
          parse = () => Function('return ' + ext).call(instance),
          parsed = parse();
 
@@ -243,48 +245,48 @@
  }
 
 
-  // Generates and returns dataQF property
-  function generateComponentData(child, isParent, instance) {
-    let arr = [],
-      attr = getAttributes(child),
-      id = child.dataset.qfid;
+ // Generates and returns dataQF property
+ function generateComponentData(child, isParent, instance) {
+   let arr = [],
+     attr = getAttributes(child),
+     id = child.dataset.qfid;
 
-    const isSVGElement = child instanceof SVGElement;
+   const isSVGElement = child instanceof SVGElement;
 
-    if (!isParent) {
-      attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
-    }
+   if (!isParent) {
+     attr.push({ attribute: instance.useStrict ? "innerText" : "innerHTML", value: instance.useStrict ? child.innerText : child.innerHTML });
+   }
 
 
-    for (let { attribute, value } of attr) {
-      value = value || "";
-      let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
+   for (let { attribute, value } of attr) {
+     value = value || "";
+     let hasTemplate = (value.indexOf("{{") > -1 && value.indexOf("}}") > -1);
 
-      if (!id && hasTemplate) {
-        child.dataset.qfid = "qf" + counterQF;
-        id = "qf" + counterQF;
-        counterQF++;
-      }
+     if (!id && hasTemplate) {
+       child.dataset.qfid = "qf" + counterQF;
+       id = "qf" + counterQF;
+       counterQF++;
+     }
 
-      if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
-        child.style[attribute] = evaluateTemplate(value, instance);
-        if (attribute.toLowerCase() !== "src") {
-          child.removeAttribute(attribute);
-        }
-      } else {
-        child.setAttribute(attribute, evaluateTemplate(value, instance));
-      }
+     if ((child.style[attribute] || child.style[attribute] === "") && !isSVGElement) {
+       child.style[attribute] = evaluateTemplate(value, instance);
+       if (attribute.toLowerCase() !== "src") {
+         child.removeAttribute(attribute);
+       }
+     } else {
+       child.setAttribute(attribute, evaluateTemplate(value, instance));
+     }
 
-      if (hasTemplate) {
-        const _eval = evaluateTemplate(value, instance);
-        if (_eval !== value) {
-          ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
-        }
-      }
-    }
-    // Returns arr 
-    return arr;
-  }
+     if (hasTemplate) {
+       const _eval = evaluateTemplate(value, instance);
+       if (_eval !== value) {
+         ((child.style[attribute] || child.style[attribute] === "" && !isSVGElement) && attribute.toLowerCase() !== "src" || attribute === "filter") ? arr.push({ template: value, key: "style." + attribute, qfid: id }): arr.push({ template: value, key: attribute, qfid: id });
+       }
+     }
+   }
+   // Returns arr 
+   return arr;
+ }
 
 
  // Function to convert an object into a CSS string
@@ -436,7 +438,8 @@
 
    const output = input.replace(regex, (match) => {
      const extracted = b(match).trim();
-     return props[extracted] ? sanitizeString(props[extracted]) : `{{ ${extracted} }}`;
+     const value = props[extracted];
+     return value ? sanitizeString(value, true) : `{{ ${extracted} }}`;
    });
 
    return output;

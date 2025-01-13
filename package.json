@@ -1,20 +1,12 @@
 {
-  "name": "queflowjs",
-  "version": "4.0.0",
-  "description": "A JavaScript library for declaratively building Web User Interfaces",
-  "main": "index.js",
-  "repository": "https://github.com/Dayson9/queflowjs",
-  "author": "Dayson",
-  "license": "MIT",
-  "private": false,
-  "entry-point": "queflow.js",
+  "name": "queflow",
+  "version": "4.2.6",
+  "description": "A simple JavaScript library for building performant web apps.",
+  "keywords": ["frontent", "library", "ui"],
+  "main": "./lib/queflow.esm-browser.js",
   "scripts": {
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "express": "^4.18.2"
-  },
-  "engines": {
-    "node": ">=14"
-  }
+  "author": "dayson9",
+  "license": "MIT"
 }

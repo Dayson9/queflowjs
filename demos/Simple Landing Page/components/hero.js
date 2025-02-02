@@ -1,4 +1,4 @@
-import { subComponent } from 'queflow';
+import { Component } from 'queflow';
 
 
 // Styles declaration for hero UI
@@ -30,8 +30,8 @@ const styles = {
   ".second": "background: #148A81;"
 }
 
-// Define subComponent for hero
-const Hero = new subComponent('Hero', {
+// Define Component for hero
+const Hero = new Component('Hero', {
   stylesheet: styles,
   template: () => `
     <div>

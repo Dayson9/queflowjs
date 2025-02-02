@@ -1,4 +1,4 @@
-import { subComponent } from 'queflow';
+import { Component } from 'queflow';
 
 // Define styles for Footer UI.
 const styles = {
@@ -20,8 +20,8 @@ const styles = {
 };
 
 
-// Define subComponent for footer
-const Footer = new subComponent('Footer', {
+// Define Component for footer
+const Footer = new Component('Footer', {
   stylesheet: styles,
   template: () => `
     <div>

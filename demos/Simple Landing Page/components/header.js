@@ -1,4 +1,4 @@
-import { subComponent } from 'queflow';
+import { Component } from 'queflow';
 
 // Styles for header UI
 const styles = {
@@ -33,8 +33,8 @@ const styles = {
 };
 
 
-// Define Header subComponent
-const Header = new subComponent('Header', {
+// Define Header Component
+const Header = new Component('Header', {
   stylesheet: styles,
   template: () => `
     <div>

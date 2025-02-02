@@ -2,10 +2,10 @@ import Header from './components/header.js';
 import Hero from './components/hero.js';
 import Footer from './components/footer.js';
 
-import { QComponent } from 'queflow';
+import { App } from 'queflow';
 
 
-const App = new QComponent("#app", {
+const LandingPage = new App("#app", {
   stylesheet: {
     "*": `
       font-family: Sans-serif;
@@ -24,4 +24,4 @@ const App = new QComponent("#app", {
 });
 
 
-App.render();
+LandingPage.render();

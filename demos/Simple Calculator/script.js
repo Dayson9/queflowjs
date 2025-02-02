@@ -1,4 +1,4 @@
-import { QComponent } from 'queflow';
+import { App } from 'queflow';
 
 
 const styles = {
@@ -46,7 +46,7 @@ const styles = {
 };
 
 
-const calculator = new QComponent("#app", {
+const calculator = new App("#app", {
   data: {
     out: 20*20
   },
@@ -56,11 +56,11 @@ const calculator = new QComponent("#app", {
       `
       <h1 color='dodgerblue'>Simple Calculator App</h1>
     
-     <p class='out'>Output: {{ this.data.out }}</p>
+     <p class='out'>Output: {{ out }}</p>
      
      <input type='text' value='20*20' id='input'>
     
-    <button onclick={{ eval(input.value) != "undefined" ? this.data.out = eval(input.value) : ''; }}>Evaluate</button>
+    <button onclick={{ eval(input.value) != "undefined" ? data.out = eval(input.value) : ''; }}>Evaluate</button>
     `
     )
   }

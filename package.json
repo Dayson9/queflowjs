@@ -3,7 +3,7 @@
   "version": "4.2.6",
   "description": "A simple JavaScript library for building performant web apps.",
   "keywords": ["frontent", "library", "ui"],
-  "main": "./lib/queflow.esm-browser.js",
+  "main": "./lib/queflow.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

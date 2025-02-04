@@ -7,6 +7,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dayson9/queflowjs.git"
+  },
+  "homepage": "https://queflowjs.vercel.app",
   "author": "dayson9",
   "license": "MIT"
 }
